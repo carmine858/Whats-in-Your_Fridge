@@ -14,7 +14,7 @@ let db = new sqlite3.Database('./database.db', (err) => {
 
 app.use(express.json());
 
-db.run(`CREATE TABLE IF NOT EXISTS utenti 
+db.run(`CREATE TABLE IF NOT EXISTS registrazionesss
 ( id INTEGER PRIMARY KEY AUTOINCREMENT,
      nome TEXT,
       cognome TEXT,
@@ -26,9 +26,9 @@ db.run(`CREATE TABLE IF NOT EXISTS utenti
            )`);
 
 
-app.post('/utenti', (req, res) => {
+app.post('/registrazione', (req, res) => {
     const { nome, cognome, data, email, password, favourite_dish, username } = req.body;
-    db.run(`INSERT INTO utenti (nome,cognome,data,email,password,favourite_dish,username) VALUES (?,?,?,?,?,?,?)`, [ nome, cognome, data, email, password, favourite_dish, username], function(err){
+    db.run(`INSERT INTO registrazione (nome,cognome,data,email,password,favourite_dish,username) VALUES (?,?,?,?,?,?,?)`, [ nome, cognome, data, email, password, favourite_dish, username], function(err){
         if(err) {
             return res.status(500).json({error: err.message} );
         }
@@ -36,8 +36,8 @@ app.post('/utenti', (req, res) => {
     });
 });
 
-app.get('/utenti', (req,res)=> {
-    db.all('SELECT * FROM utenti', [], (err,rows) => {
+app.get('/registrazione', (req,res)=> {
+    db.all('SELECT * FROM registrazione', [], (err,rows) => {
         if (err) {
             return res.status(500).json({error : err.message});
         }
@@ -45,11 +45,11 @@ app.get('/utenti', (req,res)=> {
     });
 });
 
-app.put('/utenti/:id', (req,res) => {
+app.put('/registrazione/:id', (req,res) => {
     const {id} = req.params;
     const {nome,email,città, titolo_studio} = req.body;
     db.run(
-        `UPDATE utenti SET nome = ?, cognome= ?, data = ?,email = ?, password = ?, favourite_dish = ?, username = ? WHERE ID= ?`, [nome,cognome,data,email,password,favourite_dish,username,id],
+        `UPDATE registrazione SET nome = ?, cognome= ?, data = ?,email = ?, password = ?, favourite_dish = ?, username = ? WHERE ID= ?`, [nome,cognome,data,email,password,favourite_dish,username,id],
         function(err){
             if (err) {
                 return res.status(500).json({error : err.message});
