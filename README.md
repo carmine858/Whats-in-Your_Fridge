@@ -1,5 +1,14 @@
 # Whats-in-Your_Fridge
 
+ What's in your fridge è l'app che consente a tutti gli appassionati di cucina di trovare nuove ricette e idee per cucinare piatti diversi con i pochi ingredienti a disposizione, potendo poi condividerli e consigliarli ai propri amici. 
+ 
+ Rinnova ogni giorno le tue ricette con ciò che hai in frigo!!!
+
+Target: appassionati di cucina
+
+Competitor: giallo zafferano, svuotafrigo, supercook,  Pimp my chef, AI chef,cookpad
+
+
 1. Funzionalità Principali
   creazione utente:
 -registrazione tramite email, immettendo username, nome, cognome, anno di nascita, piatto preferito e password
