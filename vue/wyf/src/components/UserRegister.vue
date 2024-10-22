@@ -1,157 +1,162 @@
 <template>
-  <div class="register-form">
-    <h2>Registrazione Utente</h2>
-    <form @submit.prevent="submitForm">
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input v-model="form.email" type="email" id="email" required />
-      </div>
+  <v-row justify="center" align="center" class="login-row">
+    <v-col cols="12" lg="6" md="8" sm="10">
+      <v-card class="login-card">
+        <v-card-title class="text-center">
+          <h2 class="headline">Accedi</h2>
+        </v-card-title>
+        <v-card-text>
+          <v-form ref="form" v-model="valid">
+            <v-text-field
+              v-model="username"
+              :error-messages="errorMessages.username"
+              :rules="[(v) => !!v || 'Username è obbligatorio']"
+              label="Username"
+              placeholder="Inserisci il tuo username"
+              required
+              prepend-icon="mdi-account"
+            ></v-text-field>
 
-      <div class="form-group">
-        <label for="username">Username:</label>
-        <input v-model="form.username" type="text" id="username" required />
-      </div>
+            <v-text-field
+              v-model="password"
+              :error-messages="errorMessages.password"
+              :rules="[(v) => !!v || 'Password è obbligatoria']"
+              label="Password"
+              type="password"
+              placeholder="Inserisci la tua password"
+              required
+              prepend-icon="mdi-lock"
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions class="d-flex justify-center">
+          <v-btn color="primary" @click="submit" class="submit-btn">Accedi</v-btn>
+          <v-btn text @click="resetForm" class="ml-2">Annulla</v-btn>
+        </v-card-actions>
 
-      <div class="form-group">
-        <label for="firstName">Nome:</label>
-        <input v-model="form.firstName" type="text" id="firstName" required />
-      </div>
+        <!-- Testo per l'account e il link di registrazione -->
+        <v-card-actions class="d-flex justify-center">
+          <p class="text-center">
+            Non hai un account?
+            <a href="#" @click="goToRegister" class="register-link">Registrati</a>
+          </p>
+        </v-card-actions>
 
-      <div class="form-group">
-        <label for="lastName">Cognome:</label>
-        <input v-model="form.lastName" type="text" id="lastName" required />
-      </div>
-
-      <div class="form-group">
-        <label for="birthYear">Anno di nascita:</label>
-        <input v-model="form.birthYear" type="text" id="birthYear" required />
-      </div>
-
-      <div class="form-group">
-        <label for="favoriteDish">Piatto preferito:</label>
-        <input v-model="form.favoriteDish" type="text" id="favoriteDish" required />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input v-model="form.password" type="password" id="password" required />
-      </div>
-
-      <button type="submit">Registrati</button>
-    </form>
-
-    <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-  </div>
+        <!-- Alert di successo per il login -->
+        <v-alert
+          v-if="showSuccessAlert"
+          type="success"
+          dismissible
+          class="mt-4"
+        >
+          Accesso avvenuto con successo! Benvenuto!
+        </v-alert>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
 import axios from 'axios';
 
 export default {
-  name: 'UserRegister',
-  data() {
-    return {
-      form: {
-        email: '',
-        username: '',
-        firstName: '',
-        lastName: '',
-        birthYear: '',
-        favoriteDish: '',
-        password: ''
-      },
-      successMessage: '',
-      errorMessage: ''
+data() {
+  return {
+    valid: false,
+    username: '',
+    password: '',
+    errorMessages: {
+      username: '',
+      password: ''
+    },
+    showSuccessAlert: false // Stato per gestire la visualizzazione dell'alert
+  };
+},
+methods: {
+  submit() {
+    this.errorMessages = {
+      username: '',
+      password: ''
     };
-  },
-  methods: {
-    async submitForm() {
-      try {
-        // Prepara i dati per la richiesta
-        const userData = {
-          nome: this.form.firstName,
-          cognome: this.form.lastName,
-          data: this.form.birthYear,
-          email: this.form.email,
-          password: this.form.password,
-          favourite_dish: this.form.favoriteDish,
-          username: this.form.username
-        };
 
-        // Invia i dati al backend tramite POST
-        const response = await axios.post('http://localhost:3000/registrazione', userData);
+    // Validazione dei campi
+    if (!this.username) this.errorMessages.username = 'Username è obbligatorio';
+    if (!this.password) this.errorMessages.password = 'Password è obbligatoria';
 
-        // Mostra messaggio di successo se la richiesta va a buon fine
-        this.successMessage = response.data.message;
-        this.errorMessage = '';
-        
-        // Resetta il form
-        this.form = {
-          email: '',
-          username: '',
-          firstName: '',
-          lastName: '',
-          birthYear: '',
-          favoriteDish: '',
-          password: ''
-        };
-      } catch (error) {
-        // Mostra l'errore se c'è stato un problema
-        this.errorMessage = error.response?.data?.error || 'Errore durante la registrazione';
-        this.successMessage = '';
-      }
+    // Se non ci sono errori, invia i dati al server
+    if (Object.values(this.errorMessages).every((msg) => msg === '')) {
+      const loginData = {
+        username: this.username,
+        password: this.password
+      };
+
+      // Esegui la chiamata API per il login
+      axios.post('http://localhost:3000/login', loginData)
+        .then(() => {
+          // Mostra l'alert di successo
+          this.showSuccessAlert = true;
+          
+          // Reindirizza alla home dopo un breve ritardo
+          setTimeout(() => {
+            this.$router.push('/home'); // Reindirizza all'home
+          }, 2000); // Aspetta 2 secondi prima di reindirizzare
+        })
+        .catch(error => {
+          console.error('Errore durante il login:', error);
+          this.errorMessages.password = 'Credenziali non valide'; // Messaggio di errore generico
+        });
     }
+  },
+  resetForm() {
+    this.username = '';
+    this.password = '';
+    this.errorMessages = {
+      username: '',
+      password: ''
+    };
+    this.showSuccessAlert = false; // Resetta l'alert in caso di reset
+  },
+  // Metodo per reindirizzare alla pagina di registrazione
+  goToRegister() {
+    this.$router.push('/register'); // Reindirizza alla pagina di registrazione
   }
+}
 };
 </script>
 
 <style scoped>
-.register-form {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+.login-row {
+min-height: 100vh; /* Allinea verticalmente il contenuto */
+background-color: #f5f5f5; /* Colore di sfondo chiaro */
 }
 
-.form-group {
-  margin-bottom: 15px;
+.login-card {
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Ombra per la carta */
+border-radius: 10px; /* Angoli arrotondati */
+padding: 20px; /* Padding interno */
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
+.submit-btn {
+transition: background-color 0.3s; /* Transizione dolce */
 }
 
-.form-group input {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
+.submit-btn:hover {
+background-color: #1976d2; /* Colore di sfondo al passaggio del mouse */
+color: white; /* Colore del testo al passaggio del mouse */
 }
 
-button {
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.text-center {
+text-align: center;
 }
 
-button:hover {
-  background-color: #0056b3;
+.register-link {
+color: #1976d2;
+cursor: pointer;
+text-decoration: underline;
 }
 
-.success-message {
-  color: green;
-  margin-top: 15px;
-}
-
-.error-message {
-  color: red;
-  margin-top: 15px;
+.register-link:hover {
+color: #0d47a1; /* Cambia colore al passaggio del mouse */
 }
 </style>
-

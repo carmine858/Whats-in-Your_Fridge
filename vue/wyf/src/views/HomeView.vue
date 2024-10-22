@@ -1,11 +1,11 @@
 <template>
- <v-layout class="overflow-visible" style="height: 56px; color: orange;">
+ <v-layout class="overflow-visible" style="height: 56px;">
     <v-bottom-navigation
       v-model="value"
       color="primary"
       active
     >
-      <v-btn  @click="navigateTo('/')">
+      <v-btn  @click="navigateTo('/home')">
         <v-icon>mdi-history</v-icon>
 
         Recents

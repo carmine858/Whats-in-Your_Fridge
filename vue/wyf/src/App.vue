@@ -1,21 +1,17 @@
 <template>
   <div id="app">
-    <UserRegister />
+      <router-view />
   </div>
 </template>
 
 <script>
-import UserRegister from './components/UserRegister.vue';
-
 export default {
-  name: 'App',
-  components: {
-    UserRegister
-  }
+  name: 'App'
 };
 </script>
 
 <style>
 /* Stili globali */
 </style>
+
 
