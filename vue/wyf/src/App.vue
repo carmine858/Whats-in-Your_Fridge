@@ -1,56 +1,54 @@
 <template>
   <div id="app">
-      <router-view />
+    <!-- Mostra la navbar solo se non sei nelle pagine di login o registrazione -->
+    <v-layout v-if="!isAuthPage" class="overflow-visible" style="height: 56px;">
+      <v-bottom-navigation
+        v-model="value"
+        color="orange"
+        active
+      >
+        <v-btn @click="navigateTo('/home')">
+          <v-icon>mdi-home</v-icon>
+          Recents
+        </v-btn>
+
+        <v-btn @click="navigateTo('/about')">
+          <v-icon>mdi-food</v-icon>
+          Favorites
+        </v-btn>
+
+        <v-btn @click="navigateTo('/nearby')">
+          <v-icon>mdi-account</v-icon>
+          <span>Nearby</span>
+        </v-btn>
+      </v-bottom-navigation>
+    </v-layout>
+
+    <!-- router-view per mostrare le pagine -->
+    <router-view />
   </div>
-
-  <v-layout class="overflow-visible" style="height: 56px;" v-if="!isLoginPage">
-    <v-bottom-navigation
-      v-model="value"
-      color="primary"
-      active
-    >
-      <v-btn  @click="navigateTo('/home')">
-        <v-icon>mdi-history</v-icon>
-
-        Recents
-      </v-btn>
-
-      <v-btn  @click="navigateTo('/about')">
-        <v-icon>mdi-heart</v-icon>
-
-        Favorites
-      </v-btn>
-
-      <v-btn>
-        <v-icon>mdi-map-marker</v-icon>
-
-        <span>Nearby</span>
-      </v-btn>
-    </v-bottom-navigation>
-  </v-layout>
-   <router-view/>
 </template>
 
 <script>
 export default {
- data() {
-   return {
-     value: 0
-   };
- },
- methods: {
-   navigateTo(route) {
-     this.$router.push(route);
-   }
- },
- computed: {
-    // Determina se la pagina corrente è quella di login
-    isLoginPage() {
-      return this.$route.path === '/';
+  data() {
+    return {
+      value: 0
+    };
+  },
+  computed: {
+    // Controlla se la pagina corrente è login o registrazione
+    isAuthPage() {
+      const authPages = ['/', '/register']; // Aggiungi qui le pagine di autenticazione
+      return authPages.includes(this.$route.path); // Verifica se la route corrente è login o registrazione
+    }
+  },
+  methods: {
+    navigateTo(route) {
+      this.$router.push(route);
     }
   }
 };
-
 </script>
 
 <style>
@@ -64,8 +62,9 @@ nav a {
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: orange;
 }
 </style>
+
 
 
