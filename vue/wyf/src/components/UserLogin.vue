@@ -2,14 +2,14 @@
   
     <!-- Titolo dell'applicazione -->
     <v-row justify="center">
-      <h1 class="app-title">What's in your Fridge?</h1>
+      <h1 class="app-title">WHAT'S IN YOUR FRIDGE?</h1>
     </v-row>
 
     <v-row justify="center" align="center" class="login-row">
       <v-col cols="12" lg="6" md="8" sm="10">
         <v-card class="login-card">
           <v-card-title class="text-center">
-            <h2 class="headline">Accedi</h2>
+            <h2 class="headline">Login</h2>
           </v-card-title>
           <v-card-text>
             <v-form ref="form" v-model="valid">
@@ -37,7 +37,7 @@
           </v-card-text>
           <v-divider></v-divider>
           <v-card-actions class="d-flex justify-center">
-            <v-btn color="primary" @click="submit" class="submit-btn">Accedi</v-btn>
+            <v-btn color="orange" @click="submit" class="submit-btn">Accedi</v-btn>
             <v-btn text @click="resetForm" class="ml-2">Annulla</v-btn>
           </v-card-actions>
 
@@ -128,14 +128,14 @@
   .login-row {
     min-height: 100vh; /* Allinea verticalmente il contenuto */
   
-    background-color: #ffa726; /* Colore di sfondo chiaro */
+    background-color: #f4a53e; /* Colore di sfondo chiaro */
   }
   
   .login-card {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   padding: 20px;
-  background-color: #c49451; /* Marrone chiaro */
+  background-color: #ebcea5; /* Marrone chiaro */
   }
   
   .submit-btn {
@@ -143,8 +143,8 @@
   }
   
   .submit-btn:hover {
-    background-color: #1976d2; /* Colore di sfondo al passaggio del mouse */
-    color: white; /* Colore del testo al passaggio del mouse */
+    background-color: #f4a53e; /* Colore di sfondo al passaggio del mouse */
+    color: #ffffff; /* Colore del testo al passaggio del mouse */
   }
   </style>
   

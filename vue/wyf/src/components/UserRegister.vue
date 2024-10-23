@@ -11,8 +11,8 @@
               v-model="name"
               :error-messages="errorMessages.name"
               :rules="[(v) => !!v || 'Nome è obbligatorio']"
-              label="Nome Completo"
-              placeholder="Es. Mario Rossi"
+              label="Nome"
+              placeholder="Es. Mario"
               required
               prepend-icon="mdi-account"
             ></v-text-field>
