@@ -194,14 +194,14 @@ export default {
 .registration-card {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Ombra per la carta */
   border-radius: 10px; /* Angoli arrotondati */
-  padding: 20px; /* Padding interno */
+ /* Padding interno */
   background-color: #ffffff;
 
     /* Nuove proprietà */
    
-    width: 100%; /* Imposta la larghezza al 100% della colonna */
-    max-width: 750px; /* Limita la larghezza massima a 500px */
-    min-height: 50%;
+    width: 103%; /* Imposta la larghezza al 100% della colonna */
+    max-width: 800px; /* Limita la larghezza massima a 500px */
+    max-height: 98vh;
 }
 
 .submit-btn {
