@@ -1,21 +1,21 @@
 <template>
-  
-    <!-- Titolo dell'applicazione -->
-
+  <!-- Contenitore principale con sfondo -->
+ 
     <v-row justify="center" align="center" class="login-row">
       <v-col cols="12" lg="6" md="8" sm="10">
         <v-card class="login-card">
           <v-alert
-          v-if="showAlert"
-          :type="alertType"
-          dismissible
-          @input="showAlert = false"
-        >
-          {{ alertMessage }}
-        </v-alert>
+            v-if="showAlert"
+            :type="alertType"
+            dismissible
+            @input="showAlert = false"
+          >
+            {{ alertMessage }}
+          </v-alert>
 
           <v-card-title class="text-center">
-            <h2 class="headline">Login</h2>
+            <h1 class="headline"> WHAT'S IN YOUR FRIDGE?</h1><br>
+            <h3>Login</h3>
           </v-card-title>
           <v-card-text>
             <v-form ref="form" v-model="valid">
@@ -28,7 +28,7 @@
                 required
                 prepend-icon="mdi-account"
               ></v-text-field>
-  
+
               <v-text-field
                 v-model="password"
                 :error-messages="errorMessages.password"
@@ -47,115 +47,113 @@
             <v-btn text @click="resetForm" class="ml-2">Annulla</v-btn>
           </v-card-actions>
 
-            <v-card-actions class="d-flex justify-center">
+          <v-card-actions class="d-flex justify-center">
             <p class="text-center">
               Non hai un account?
               <a href="#" @click="goToRegister" class="register-link">Registrati</a>
             </p>
           </v-card-actions>
-
-
         </v-card>
       </v-col>
     </v-row>
 
-  </template>
-  
-  <script>
-  import axios from 'axios';
-  export default {
-    data() {
-      return {
-        valid: false,
+</template>
+
+<script>
+import axios from 'axios';
+export default {
+  data() {
+    return {
+      valid: false,
+      username: '',
+      password: '',
+      errorMessages: {
         username: '',
-        password: '',
-        errorMessages: {
-          username: '',
-          password: ''
-        },
-        showAlert: false,      // Stato per mostrare o nascondere l'alert
-        alertMessage: '',      // Messaggio dell'alert
-        alertType: 'success'
+        password: ''
+      },
+      showAlert: false,      // Stato per mostrare o nascondere l'alert
+      alertMessage: '',      // Messaggio dell'alert
+      alertType: 'success'
+    };
+  },
+  methods: {
+    submit() {
+      this.errorMessages = {
+        username: '',
+        password: ''
       };
-    },
-    methods: {
-      submit() {
-        this.errorMessages = {
-          username: '',
-          password: ''
+
+      // Validazione dei campi
+      if (!this.username) this.errorMessages.username = 'Username è obbligatorio';
+      if (!this.password) this.errorMessages.password = 'Password è obbligatoria';
+
+      // Se non ci sono errori, invia i dati al server
+      if (Object.values(this.errorMessages).every((msg) => msg === '')) {
+        const loginData = {
+          username: this.username,
+          password: this.password
         };
-  
-        // Validazione dei campi
-        if (!this.username) this.errorMessages.username = 'Username è obbligatorio';
-        if (!this.password) this.errorMessages.password = 'Password è obbligatoria';
-  
-        // Se non ci sono errori, invia i dati al server
-        if (Object.values(this.errorMessages).every((msg) => msg === '')) {
-          const loginData = {
-            username: this.username,
-            password: this.password
-          };
-  
-          // Esegui la chiamata API per il login
-         axios.post('http://localhost:3000/login', loginData)
-            .then(() => {
-              // Gestisci la risposta, ad esempio, memorizza il token
-              this.alertMessage = 'Accesso avvenuto con successo!';
+
+        // Esegui la chiamata API per il login
+       axios.post('http://localhost:3000/login', loginData)
+          .then(() => {
+            this.alertMessage = 'Accesso avvenuto con successo!';
             this.alertType = 'success';
             this.showAlert = true;
+
+            setTimeout(() => {
               this.$router.push('/home'); // Reindirizza all'home
-            })
-            .catch(error => {
-              console.error('Errore durante il login:', error);
-              this.errorMessages.password = 'Credenziali non valide'; // Messaggio di errore generico
-            });
-        }
-      },
-      resetForm() {
-        this.username = '';
-        this.password = '';
-        this.errorMessages = {
-          username: '',
-          password: ''
-        };
-      },
-      goToRegister() {
-        this.$router.push('/register');
+            }, 1500); 
+          })
+          .catch(error => {
+            console.error('Errore durante il login:', error);
+            this.errorMessages.password = 'Credenziali non valide'; // Messaggio di errore generico
+          });
+      }
+    },
+    resetForm() {
+      this.username = '';
+      this.password = '';
+      this.errorMessages = {
+        username: '',
+        password: ''
+      };
+    },
+    goToRegister() {
+      this.$router.push('/register');
     }
   }
-  };
-  </script>
-  
-  <style scoped>
+};
+</script>
 
-.app-title {
-  font-family: 'Pacifico', cursive; /* Font a tema */
-  font-size: 3rem;
-  color: white;
-  text-align: center;
-  margin-bottom: -80px;
-  margin-top: 20px;
+<style scoped>
+
+.headline {
+font-family: fantasy, cursive;
+color: #f4a53e;
 }
-  .login-row {
-    min-height: 100vh; /* Allinea verticalmente il contenuto */
-  
-    background-color: #f4a53e; /* Colore di sfondo chiaro */
-  }
-  
-  .login-card {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  padding: 20px;
-  background-color: #ebcea5; /* Marrone chiaro */
-  }
-  
-  .submit-btn {
-    transition: background-color 0.3s; /* Transizione dolce */
-  }
-  
-  .submit-btn:hover {
-    background-color: #f4a53e; /* Colore di sfondo al passaggio del mouse */
-    color: #ffffff; /* Colore del testo al passaggio del mouse */
-  }
-  </style>
+
+.login-row {
+min-height: 100vh; 
+}
+
+.login-card {
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+border-radius: 10px;
+padding: 20px;
+background-color: #ffffff;
+
+}
+
+/* Stile per il pulsante */
+.submit-btn {
+transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+background-color: #e5c499;
+color: #ffffff;
+}
+</style>
+
   

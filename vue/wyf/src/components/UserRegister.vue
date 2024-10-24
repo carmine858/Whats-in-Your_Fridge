@@ -88,6 +88,7 @@
       </v-card>
     </v-col>
   </v-row>
+
 </template>
 
 <script>
@@ -183,25 +184,24 @@ export default {
 </script>
 
 <style scoped>
-.app-title {
-  font-family: 'Pacifico', cursive; /* Font a tema */
-  font-size: 3rem;
-  color: white;
-  text-align: center;
-  margin-bottom: -80px;
-  margin-top: 20px;
-}
+
 
 .registration-row {
-  min-height: 100vh; /* Allinea verticalmente il contenuto */
-  background-color:  #f4a53e; /* Colore di sfondo chiaro */
+  min-height: 90vh; /* Allinea verticalmente il contenuto */
+ 
 }
 
 .registration-card {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Ombra per la carta */
   border-radius: 10px; /* Angoli arrotondati */
   padding: 20px; /* Padding interno */
-  background-color: #ebcea5;
+  background-color: #ffffff;
+
+    /* Nuove proprietà */
+   
+    width: 100%; /* Imposta la larghezza al 100% della colonna */
+    max-width: 750px; /* Limita la larghezza massima a 500px */
+    min-height: 50%;
 }
 
 .submit-btn {

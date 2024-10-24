@@ -1,8 +1,6 @@
-<template style="background-color: orange;">
-  <div id="app" >
-    <v-row justify="center">
-      <h1 class="app-title">WHAT'S IN YOUR FRIDGE?</h1>
-    </v-row>
+<template>
+  <div id="app" class="background-div">
+
 
     <!-- Mostra la navbar solo se non sei nelle pagine di login o registrazione -->
     <v-layout v-if="!isAuthPage" class="overflow-visible" style="height: 56px;">
@@ -77,6 +75,18 @@ nav a {
 
 nav a.router-link-exact-active {
   color: orange;
+}
+
+.background-div {
+background-image: url('@/assets/sfondo.jpg'); /* Usa il percorso dell'immagine */
+background-size: cover; /* Copre interamente l'area */
+background-position: center;
+background-repeat: no-repeat;
+width: 100%;
+min-height: 100vh; /* Copre l'altezza della finestra */
+display: flex;
+justify-content: center;
+align-items: center;
 }
 </style>
 
