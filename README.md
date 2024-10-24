@@ -8,6 +8,7 @@ Target: appassionati di cucina
 
 Competitor: giallo zafferano, svuotafrigo, supercook,  Pimp my chef, AI chef,cookpad
 
+https://yuml.me/912b381f.jpg
 
 1. Funzionalità Principali
   creazione utente:
