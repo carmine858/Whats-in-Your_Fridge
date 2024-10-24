@@ -1,13 +1,19 @@
 <template>
   
     <!-- Titolo dell'applicazione -->
-    <v-row justify="center">
-      <h1 class="app-title">WHAT'S IN YOUR FRIDGE?</h1>
-    </v-row>
 
     <v-row justify="center" align="center" class="login-row">
       <v-col cols="12" lg="6" md="8" sm="10">
         <v-card class="login-card">
+          <v-alert
+          v-if="showAlert"
+          :type="alertType"
+          dismissible
+          @input="showAlert = false"
+        >
+          {{ alertMessage }}
+        </v-alert>
+
           <v-card-title class="text-center">
             <h2 class="headline">Login</h2>
           </v-card-title>
@@ -66,7 +72,10 @@
         errorMessages: {
           username: '',
           password: ''
-        }
+        },
+        showAlert: false,      // Stato per mostrare o nascondere l'alert
+        alertMessage: '',      // Messaggio dell'alert
+        alertType: 'success'
       };
     },
     methods: {
@@ -91,7 +100,9 @@
          axios.post('http://localhost:3000/login', loginData)
             .then(() => {
               // Gestisci la risposta, ad esempio, memorizza il token
-              alert('Accesso avvenuto con successo!');
+              this.alertMessage = 'Accesso avvenuto con successo!';
+            this.alertType = 'success';
+            this.showAlert = true;
               this.$router.push('/home'); // Reindirizza all'home
             })
             .catch(error => {

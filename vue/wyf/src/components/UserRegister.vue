@@ -1,4 +1,5 @@
 <template>
+  
   <v-row justify="center" align="center" class="registration-row">
     <v-col cols="12" lg="6" md="8" sm="10">
       <v-card class="registration-card">
@@ -81,7 +82,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions class="d-flex justify-center">
-          <v-btn color="primary" @click="submit" class="submit-btn">Registrati</v-btn>
+          <v-btn color="orange" @click="submit" class="submit-btn">Registrati</v-btn>
           <v-btn text @click="resetForm" class="ml-2">Annulla</v-btn>
         </v-card-actions>
       </v-card>
@@ -182,15 +183,25 @@ export default {
 </script>
 
 <style scoped>
+.app-title {
+  font-family: 'Pacifico', cursive; /* Font a tema */
+  font-size: 3rem;
+  color: white;
+  text-align: center;
+  margin-bottom: -80px;
+  margin-top: 20px;
+}
+
 .registration-row {
   min-height: 100vh; /* Allinea verticalmente il contenuto */
-  background-color: #f5f5f5; /* Colore di sfondo chiaro */
+  background-color:  #f4a53e; /* Colore di sfondo chiaro */
 }
 
 .registration-card {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Ombra per la carta */
   border-radius: 10px; /* Angoli arrotondati */
   padding: 20px; /* Padding interno */
+  background-color: #ebcea5;
 }
 
 .submit-btn {
@@ -198,7 +209,7 @@ export default {
 }
 
 .submit-btn:hover {
-  background-color: #1976d2; /* Colore di sfondo al passaggio del mouse */
+  background-color: #f4a53e; /* Colore di sfondo al passaggio del mouse */
   color: white; /* Colore del testo al passaggio del mouse */
 }
 </style>

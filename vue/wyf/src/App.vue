@@ -1,5 +1,9 @@
-<template>
-  <div id="app">
+<template style="background-color: orange;">
+  <div id="app" >
+    <v-row justify="center">
+      <h1 class="app-title">WHAT'S IN YOUR FRIDGE?</h1>
+    </v-row>
+
     <!-- Mostra la navbar solo se non sei nelle pagine di login o registrazione -->
     <v-layout v-if="!isAuthPage" class="overflow-visible" style="height: 56px;">
       <v-bottom-navigation
@@ -9,17 +13,17 @@
       >
         <v-btn @click="navigateTo('/home')">
           <v-icon>mdi-home</v-icon>
-          Recents
+          Home
         </v-btn>
 
-        <v-btn @click="navigateTo('/about')">
+        <v-btn @click="navigateTo('/recipe')">
           <v-icon>mdi-food</v-icon>
-          Favorites
+          Ricette
         </v-btn>
 
-        <v-btn @click="navigateTo('/nearby')">
+        <v-btn @click="navigateTo('/profile')">
           <v-icon>mdi-account</v-icon>
-          <span>Nearby</span>
+          <span>Profilo</span>
         </v-btn>
       </v-bottom-navigation>
     </v-layout>
@@ -52,6 +56,16 @@ export default {
 </script>
 
 <style>
+
+.app-title {
+  font-family: 'Pacifico', cursive; /* Font a tema */
+  font-size: 3rem;
+  color: white;
+  text-align: center;
+  margin-bottom: -80px;
+  margin-top: 20px;
+}
+
 nav {
   padding: 30px;
 }
