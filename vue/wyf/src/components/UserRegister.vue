@@ -4,7 +4,8 @@
     <v-col cols="12" lg="6" md="8" sm="10">
       <v-card class="registration-card">
         <v-card-title class="text-center">
-          <h2 class="headline">Registrati</h2>
+          <h1 class="headline"> WHAT'S IN YOUR FRIDGE?</h1><br>
+            <h3>Registrazione</h3>
         </v-card-title>
         <v-card-text>
           <v-form ref="form" v-model="valid">
@@ -184,10 +185,13 @@ export default {
 </script>
 
 <style scoped>
-
+.headline {
+font-family: fantasy, cursive;
+color: #f4a53e;
+}
 
 .registration-row {
-  min-height: 90vh; /* Allinea verticalmente il contenuto */
+  min-height: 100vh; /* Allinea verticalmente il contenuto */
  
 }
 
@@ -199,9 +203,9 @@ export default {
 
     /* Nuove proprietà */
    
-    width: 103%; /* Imposta la larghezza al 100% della colonna */
-    max-width: 800px; /* Limita la larghezza massima a 500px */
-    max-height: 98vh;
+    width: 100%; /* Imposta la larghezza al 100% della colonna */
+    
+    max-height: 100vh;
 }
 
 .submit-btn {
