@@ -61,4 +61,7 @@ Requisito: Gli utenti devono poter salvare le ricette preferite in una lista per
 
 2.4. Valutazioni e Commenti sulle Ricette
 Requisito: Gli utenti devono poter valutare le ricette con un sistema di stelle e lasciare commenti sulle ricette che hanno provato.
+Motivo: Aiuta gli utenti a identificare le ricette migliori e fornisce feedback alla community di utenti.
 
+
+![Diagramma image](diagramma.jpg)
