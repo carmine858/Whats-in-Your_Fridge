@@ -42,7 +42,7 @@ Requisito: Gli utenti devono poter creare e caricare le proprie ricette sull'app
 
 Sezione per aggiungere gli ingredienti, la preparazione, il tempo di cottura e una foto del piatto.
 Gli utenti possono aggiornare e modificare le proprie ricette in qualsiasi momento.
-Funzione di “pubblica o privata” per decidere se condividere la ricetta con tutti o solo con amici.
+
 
 1.5. Funzionalità di Lista della Spesa
 Requisito: L'app deve permettere all'utente di creare una lista della spesa direttamente dall'app, aggiungendo gli ingredienti mancanti delle ricette selezionate.
