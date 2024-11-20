@@ -71,8 +71,8 @@ export default {
         username: '',
         password: ''
       },
-      showAlert: false,      // Stato per mostrare o nascondere l'alert
-      alertMessage: '',      // Messaggio dell'alert
+      showAlert: false,      
+      alertMessage: '',      
       alertType: 'success'
     };
   },
@@ -83,18 +83,18 @@ export default {
         password: ''
       };
 
-      // Validazione dei campi
+
       if (!this.username) this.errorMessages.username = 'Username è obbligatorio';
       if (!this.password) this.errorMessages.password = 'Password è obbligatoria';
 
-      // Se non ci sono errori, invia i dati al server
+
       if (Object.values(this.errorMessages).every((msg) => msg === '')) {
         const loginData = {
           username: this.username,
           password: this.password
         };
 
-        // Esegui la chiamata API per il login
+       
        axios.post('http://localhost:3000/login', loginData)
           .then(() => {
             this.alertMessage = 'Accesso avvenuto con successo!';
@@ -102,12 +102,12 @@ export default {
             this.showAlert = true;
 
             setTimeout(() => {
-              this.$router.push('/home'); // Reindirizza all'home
+              this.$router.push('/home'); 
             }, 1500); 
           })
           .catch(error => {
             console.error('Errore durante il login:', error);
-            this.errorMessages.password = 'Credenziali non valide'; // Messaggio di errore generico
+            this.errorMessages.password = 'Credenziali non valide'; 
           });
       }
     },
@@ -145,7 +145,7 @@ background-color: #ffffff;
 
 }
 
-/* Stile per il pulsante */
+
 .submit-btn {
 transition: background-color 0.3s;
 }

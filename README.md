@@ -65,3 +65,4 @@ Motivo: Aiuta gli utenti a identificare le ricette migliori e fornisce feedback 
 
 
 ![Diagramma image](diagramma.jpg)
+![Backlog](pb.pdf)

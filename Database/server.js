@@ -1,8 +1,8 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
 const cors = require('cors');
-const bcrypt = require('bcrypt'); // Per la crittografia delle password
-const jwt = require('jsonwebtoken'); // Per la gestione dei token
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken'); 
 const app = express();
 const port = 3000;
 

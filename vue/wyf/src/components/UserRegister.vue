@@ -101,7 +101,7 @@ export default {
       valid: false,
       name: '',
       surname: '',
-      username: '', // Aggiunto il campo username
+      username: '', 
       email: '',
       birthYear: '',
       favoriteDish: '',
@@ -109,7 +109,7 @@ export default {
       errorMessages: {
         name: '',
         surname: '',
-        username: '', // Aggiunto errore per username
+        username: '', 
         email: '',
         birthYear: '',
         favoriteDish: '',
@@ -122,35 +122,35 @@ export default {
       this.errorMessages = {
         name: '',
         surname: '',
-        username: '', // Resettato l'errore per username
+        username: '', 
         email: '',
         birthYear: '',
         favoriteDish: '',
         password: ''
       };
 
-      // Validazione dei campi
+
       if (!this.name) this.errorMessages.name = 'Nome è obbligatorio';
       if (!this.surname) this.errorMessages.surname = 'Cognome è obbligatorio';
-      if (!this.username) this.errorMessages.username = 'Username è obbligatorio'; // Validazione per username
+      if (!this.username) this.errorMessages.username = 'Username è obbligatorio'; 
       if (!this.email) this.errorMessages.email = 'Email è obbligatoria';
       if (!this.birthYear) this.errorMessages.birthYear = 'Anno di nascita è obbligatorio';
       if (!this.favoriteDish) this.errorMessages.favoriteDish = 'Piatto preferito è obbligatorio';
       if (!this.password) this.errorMessages.password = 'Password è obbligatoria';
 
-      // Se non ci sono errori, invia i dati al server
+  
       if (Object.values(this.errorMessages).every((msg) => msg === '')) {
         const userData = {
           nome: this.name,
           cognome: this.surname,
-          username: this.username, // Includi il campo username
+          username: this.username, 
           email: this.email,
           data: this.birthYear,
           favourite_dish: this.favoriteDish,
           password: this.password
         };
 
-        // Esegui la chiamata API per registrare l'utente
+        
         axios.post('http://localhost:3000/registrazione', userData)
           .then(() => {
             alert('Registrazione avvenuta con successo!');
@@ -165,7 +165,7 @@ export default {
     resetForm() {
       this.name = '';
       this.surname = '';
-      this.username = ''; // Resettato il campo username
+      this.username = ''; 
       this.email = '';
       this.birthYear = '';
       this.favoriteDish = '';
@@ -173,7 +173,7 @@ export default {
       this.errorMessages = {
         name: '',
         surname: '',
-        username: '', // Resettato l'errore per username
+        username: '',
         email: '',
         birthYear: '',
         favoriteDish: '',
@@ -191,30 +191,30 @@ color: #f4a53e;
 }
 
 .registration-row {
-  min-height: 100vh; /* Allinea verticalmente il contenuto */
+  min-height: 100vh; 
  
 }
 
 .registration-card {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Ombra per la carta */
-  border-radius: 10px; /* Angoli arrotondati */
- /* Padding interno */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); 
+  border-radius: 10px;
+
   background-color: #ffffff;
 
-    /* Nuove proprietà */
+
    
-    width: 100%; /* Imposta la larghezza al 100% della colonna */
+    width: 100%; 
     
     max-height: 100vh;
 }
 
 .submit-btn {
-  transition: background-color 0.3s; /* Transizione dolce */
+  transition: background-color 0.3s; 
 }
 
 .submit-btn:hover {
-  background-color: #f4a53e; /* Colore di sfondo al passaggio del mouse */
-  color: white; /* Colore del testo al passaggio del mouse */
+  background-color: #f4a53e; 
+  color: white;
 }
 </style>
 
