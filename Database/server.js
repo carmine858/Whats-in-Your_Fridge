@@ -3,6 +3,8 @@ const sqlite3 = require('sqlite3');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); 
+const fs = require('fs');
+const csv = require('csv-parser');
 const app = express();
 const port = 3000;
 
@@ -123,6 +125,57 @@ app.put('/registrazione/:id', (req, res) => {
         }
     );
 });
+
+db.run(`
+    CREATE TABLE IF NOT EXISTS ricette (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titolo TEXT,
+        immagine TEXT,
+        difficolta TEXT,
+        tipo TEXT,
+        descrizione TEXT,
+        ingredienti TEXT,
+        istruzioni TEXT,
+        tempo TEXT
+    )
+`);
+
+// Endpoint GET per ottenere tutte le ricette
+app.get('/recipes', (req, res) => {
+    db.all('SELECT * FROM ricette', [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ recipes: rows });
+    });
+});
+
+function importRicetteFromCSV(filePath) {
+    fs.createReadStream(filePath)
+        .pipe(csv())
+        .on('data', (row) => {
+            const { Titolo, Immagine, Difficoltà, Tipo, Breve_descrizione, Ingredienti, Istruzioni, Tempo } = row;
+
+            db.run(
+                `INSERT INTO ricette (titolo, immagine, difficolta, tipo, descrizione, ingredienti, istruzioni, tempo)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [Titolo, Immagine, Difficoltà, Tipo, Breve_descrizione, Ingredienti, Istruzioni, Tempo],
+                (err) => {
+                    if (err) {
+                        console.error("Errore durante l'inserimento nel database:", err.message);
+                    }
+                }
+            );
+        })
+        .on('end', () => {
+            console.log('Importazione completata.');
+        });
+}
+
+// Richiamo della funzione per importare il file
+importRicetteFromCSV('./ricette.csv');
+
+
 
 // Chiusura del database in caso di interruzione del processo
 process.on('SIGINT', () => {

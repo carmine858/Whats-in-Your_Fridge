@@ -18,11 +18,21 @@
           <v-icon>mdi-food</v-icon>
           Ricette
         </v-btn>
+        <v-btn @click="navigateTo('#')">
+          <v-icon> mdi-magnify</v-icon>
+          <span>Cerca</span>
+        </v-btn>
+        <v-btn @click="navigateTo('#')">
+          <v-icon> mdi-cart</v-icon>
+          <span>Lista</span>
+        </v-btn>
 
         <v-btn @click="navigateTo('/profile')">
           <v-icon>mdi-account</v-icon>
           <span>Profilo</span>
         </v-btn>
+        
+       
       </v-bottom-navigation>
     </v-layout>
 
