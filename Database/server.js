@@ -2,7 +2,7 @@ const express = require('express');
 const sqlite3 = require('sqlite3');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken'); 
+const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const csv = require('csv-parser');
 const app = express();
@@ -19,7 +19,7 @@ let db = new sqlite3.Database('./database.db', (err) => {
     console.log('Connesso al database');
 });
 
-// Creazione della tabella "registrazione" (se non esiste)
+// Creazione tabella utenti
 db.run(`CREATE TABLE IF NOT EXISTS registrazione (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT,
@@ -31,16 +31,30 @@ db.run(`CREATE TABLE IF NOT EXISTS registrazione (
     username TEXT UNIQUE
 )`);
 
-// Endpoint POST per la registrazione di un nuovo utente
+// Creazione tabella ricette
+db.run(`CREATE TABLE IF NOT EXISTS ricette (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    titolo TEXT,
+    immagine TEXT,
+    difficolta TEXT,
+    tipo TEXT,
+    descrizione TEXT,
+    ingredienti TEXT,
+    istruzioni TEXT,
+    tempo TEXT,
+    rating REAL
+)`);
+
+// Endpoint per registrazione utenti
 app.post('/registrazione', async (req, res) => {
     const { nome, cognome, data, email, password, favourite_dish, username } = req.body;
 
     try {
-        // Crittografia della password
         const hashedPassword = await bcrypt.hash(password, 10);
-        
+
         db.run(`INSERT INTO registrazione (nome, cognome, data, email, password, favourite_dish, username)
-                VALUES (?, ?, ?, ?, ?, ?, ?)`, [nome, cognome, data, email, hashedPassword, favourite_dish, username],
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [nome, cognome, data, email, hashedPassword, favourite_dish, username],
             function (err) {
                 if (err) {
                     return res.status(500).json({ error: err.message });
@@ -52,7 +66,7 @@ app.post('/registrazione', async (req, res) => {
     }
 });
 
-// Endpoint POST per il login di un utente
+// Endpoint per login utenti
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -65,13 +79,11 @@ app.post('/login', async (req, res) => {
                 return res.status(401).json({ message: 'Credenziali non valide' });
             }
 
-            // Confronto della password
             const isPasswordValid = await bcrypt.compare(password, user.password);
             if (!isPasswordValid) {
                 return res.status(401).json({ message: 'Credenziali non valide' });
             }
 
-            // Creazione del token
             const token = jwt.sign({ userId: user.id }, 'your_jwt_secret', { expiresIn: '1h' });
             res.json({ message: 'Login avvenuto con successo', token });
         });
@@ -92,57 +104,31 @@ function authenticateToken(req, res, next) {
     });
 }
 
-// Rotta protetta (esempio)
-app.get('/home', authenticateToken, (req, res) => {
+// Endpoint protetto di esempio
+app.get('/profile', authenticateToken, (req, res) => {
     res.json({ message: 'Benvenuto nel tuo profilo!', user: req.user });
 });
 
-// Endpoint GET per ottenere tutte le registrazioni
-app.get('/registrazione', (req, res) => {
-    db.all('SELECT * FROM registrazione', [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ users: rows });
-    });
-});
-
-// Endpoint PUT per aggiornare un utente tramite ID
-app.put('/registrazione/:id', (req, res) => {
-    const { id } = req.params;
-    const { nome, cognome, data, email, password, favourite_dish, username } = req.body;
-
-    db.run(`UPDATE registrazione SET nome = ?, cognome = ?, data = ?, email = ?, password = ?, favourite_dish = ?, username = ?
-            WHERE id = ?`, [nome, cognome, data, email, password, favourite_dish, username, id],
-        function (err) {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            if (this.changes === 0) {
-                return res.status(404).json({ message: 'Utente non trovato' });
-            }
-            res.json({ message: 'Utente aggiornato con successo' });
-        }
-    );
-});
-
-db.run(`
-    CREATE TABLE IF NOT EXISTS ricette (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        titolo TEXT,
-        immagine TEXT,
-        difficolta TEXT,
-        tipo TEXT,
-        descrizione TEXT,
-        ingredienti TEXT,
-        istruzioni TEXT,
-        tempo TEXT
-    )
-`);
-
-// Endpoint GET per ottenere tutte le ricette
+// Endpoint per ottenere tutte le ricette
 app.get('/recipes', (req, res) => {
-    db.all('SELECT * FROM ricette', [], (err, rows) => {
+    const { tipo, search } = req.query;
+    let query = 'SELECT * FROM ricette';
+    const params = [];
+
+    if (tipo || search) {
+        query += ' WHERE ';
+        if (tipo) {
+            query += 'tipo = ? ';
+            params.push(tipo);
+        }
+        if (search) {
+            if (tipo) query += 'AND ';
+            query += 'LOWER(titolo) LIKE ? ';
+            params.push(`%${search.toLowerCase()}%`);
+        }
+    }
+
+    db.all(query, params, (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -150,16 +136,17 @@ app.get('/recipes', (req, res) => {
     });
 });
 
+// Funzione per importare ricette da un file CSV
 function importRicetteFromCSV(filePath) {
     fs.createReadStream(filePath)
         .pipe(csv())
         .on('data', (row) => {
-            const { Titolo, Immagine, Difficoltà, Tipo, Breve_descrizione, Ingredienti, Istruzioni, Tempo } = row;
+            const { Titolo, Immagine, Difficoltà, Tipo, Breve_descrizione, Ingredienti, Istruzioni, Tempo, Rating } = row;
 
             db.run(
-                `INSERT INTO ricette (titolo, immagine, difficolta, tipo, descrizione, ingredienti, istruzioni, tempo)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-                [Titolo, Immagine, Difficoltà, Tipo, Breve_descrizione, Ingredienti, Istruzioni, Tempo],
+                `INSERT INTO ricette (titolo, immagine, difficolta, tipo, descrizione, ingredienti, istruzioni, tempo, rating)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [Titolo, Immagine, Difficoltà, Tipo, Breve_descrizione, Ingredienti, Istruzioni, Tempo, parseFloat(Rating)],
                 (err) => {
                     if (err) {
                         console.error("Errore durante l'inserimento nel database:", err.message);
@@ -172,24 +159,57 @@ function importRicetteFromCSV(filePath) {
         });
 }
 
-// Richiamo della funzione per importare il file
+// Importa dati di esempio da un file CSV
 importRicetteFromCSV('./ricette.csv');
 
+// Endpoint per ottenere una singola ricetta
+app.get('/recipes/:id', (req, res) => {
+    const { id } = req.params;
 
+    db.get('SELECT * FROM ricette WHERE id = ?', [id], (err, row) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (!row) {
+            return res.status(404).json({ message: 'Ricetta non trovata' });
+        }
+        res.json(row);
+    });
+});
 
-// Chiusura del database in caso di interruzione del processo
+// Endpoint per aggiornare una ricetta
+app.put('/recipes/:id', (req, res) => {
+    const { id } = req.params;
+    const { titolo, immagine, difficolta, tipo, descrizione, ingredienti, istruzioni, tempo, rating } = req.body;
+
+    db.run(
+        `UPDATE ricette SET titolo = ?, immagine = ?, difficolta = ?, tipo = ?, descrizione = ?, ingredienti = ?, istruzioni = ?, tempo = ?, rating = ?
+         WHERE id = ?`,
+        [titolo, immagine, difficolta, tipo, descrizione, ingredienti, istruzioni, tempo, rating, id],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ message: 'Ricetta non trovata' });
+            }
+            res.json({ message: 'Ricetta aggiornata con successo' });
+        }
+    );
+});
+
+// Chiusura del database al termine del processo
 process.on('SIGINT', () => {
     db.close((err) => {
         if (err) {
             console.error(err.message);
         }
-        console.log('Chiusura database');
+        console.log('Database chiuso');
         process.exit(0);
     });
 });
 
-// Avvio del server Express
+// Avvio del server
 app.listen(port, () => {
     console.log(`Server API in esecuzione su http://localhost:${port}`);
 });
-

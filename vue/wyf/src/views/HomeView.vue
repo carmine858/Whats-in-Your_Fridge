@@ -1,10 +1,37 @@
 <template>
-  <v-container class="text-center">
-    <h1 class="app-title">WHAT'S IN YOUR FRIDGE?</h1>
+  <v-container>
+    <!-- Header -->
+    <div class="header">
+      <h2 class="greeting">Hello Andrea</h2>
+      <p class="subheader">What are you cooking today?</p>
+    </div>
 
+    <!-- Search and Filters -->
+    <div class="search-and-filters">
+      <v-autocomplete
+    class="custom-autocomplete"
+    label="Autocomplete"
+    :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+    variant="underlined"
+  ></v-autocomplete>
 
+      <!-- Chip di categoria -->
+      <div class="category-chips">
+        <v-chip
+          v-for="category in categories"
+          :key="category"
+          variant="elevated"
+          color="primary"
+          :class="{'selected-chip': selectedCategory === category}"
+          @click="selectCategory(category)"
+        >
+          {{ category }}
+        </v-chip>
+      </div>
+    </div>
 
-    <v-row>
+    <!-- Recipes -->
+    <v-row class="recipe-grid" justify="start" align="start">
       <v-col
         v-for="recipe in recipes"
         :key="recipe.id"
@@ -12,37 +39,19 @@
         sm="6"
         md="4"
       >
-        <v-card class="mx-auto my-6" max-width="374">
-          <v-img :src="recipe.immagine" height="250" cover></v-img>
-
-          <v-card-item>
-            <v-card-title>{{ recipe.titolo }}</v-card-title>
-            <v-card-subtitle>
-              <span class="me-1">{{ recipe.tipo }}</span>
-              <v-icon
-                v-if="recipe.difficolta === 'facile'"
-                color="green"
-                icon="mdi-check-circle"
-              ></v-icon>
-              <v-icon
-                v-else-if="recipe.difficolta === 'media'"
-                color="orange"
-                icon="mdi-alert-circle"
-              ></v-icon>
-              <v-icon
-                v-else
-                color="red"
-                icon="mdi-alert-circle-outline"
-              ></v-icon>
-            </v-card-subtitle>
-          </v-card-item>
-
-          <v-card-text>{{ recipe.descrizione }}</v-card-text>
-          <v-card-actions>
-            <v-btn color="deep-purple-lighten-2" text block>
-              Scopri di più
-            </v-btn>
-          </v-card-actions>
+        <v-card class="recipe-card" max-width="374">
+          <v-img :src="recipe.immagine || defaultImage" height="150" cover></v-img>
+          <v-card-text>
+            <div class="recipe-header">
+              <span class="recipe-title">{{ recipe.titolo }}</span>
+              <v-chip class="rating-chip" color="orange" text>
+                <v-icon small>mdi-star</v-icon> {{ recipe.rating }}
+              </v-chip>
+            </div>
+            <div class="recipe-meta">
+              <span>{{ recipe.tempo }}</span>
+            </div>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
@@ -53,32 +62,125 @@
 import axios from "axios";
 
 export default {
-  name: "HomeView",
   data() {
     return {
       recipes: [],
+      search: "",
+      selectedCategory: "All",
+      categories: ["All", "Indian", "Italian", "Asian", "Chinese"],
+      loading: false,
+      defaultImage: "https://via.placeholder.com/150", // Immagine predefinita
     };
   },
+  methods: {
+    fetchRecipes() {
+      this.loading = true;
+      // Prepara i parametri della query
+      const params = {};
+      if (this.selectedCategory !== "All") {
+        params.tipo = this.selectedCategory;
+      }
+      if (this.search) {
+        params.search = this.search;
+      }
+
+      // Recupera i dati dal backend
+      axios
+        .get("http://localhost:3000/recipes", { params })
+        .then((response) => {
+          this.recipes = response.data.recipes;
+        })
+        .catch((error) => {
+          console.error("Errore durante il caricamento delle ricette:", error);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+    selectCategory(category) {
+      this.selectedCategory = category;
+      this.fetchRecipes(); // Aggiorna le ricette in base alla categoria
+    },
+  },
   mounted() {
-    // Effettua una chiamata all'endpoint delle ricette
-    axios
-      .get("http://localhost:3000/recipes")
-      .then((response) => {
-        this.recipes = response.data.recipes;
-      })
-      .catch((error) => {
-        console.error("Errore durante il caricamento delle ricette:", error);
-      });
+    this.fetchRecipes();
   },
 };
 </script>
-<style scoped>
-/* Stile per il titolo centrale */
-.app-title {
-  margin-bottom: 5px;
-  font-family: fantasy, cursive;
-  color: #f4a53e;
 
+<style scoped>
+/* Container principale */
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.greeting {
+  font-size: 24px;
+  color: #f4a53e;
+}
+.subheader {
+  font-size: 16px;
+  color: #888;
+  margin-bottom: 20px;
 }
 
+/* Barra di ricerca e chip di categoria */
+.search-and-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Spaziatura tra barra di ricerca e chip */
+  margin-bottom: 20px;
+  align-items: center;
+}
+.search-bar {
+  width: 100%;
+  max-width: 600px;
+}
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.selected-chip {
+  background-color: #f4a53e !important; /* Colore evidenziato */
+  color: white !important;
+}
+
+/* Griglia delle ricette */
+.recipe-grid {
+  margin-top: 20px;
+}
+.recipe-card {
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.recipe-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.recipe-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+.rating-chip {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+.recipe-meta {
+  font-size: 14px;
+  color: #999;
+}
+
+.custom-autocomplete {
+  background-color: white; /* Colore di sfondo */
+  border: 2px solid #ccc; /* Bordo più spesso */
+  border-radius: 8px; /* Arrotonda i bordi, opzionale */
+  padding: 4px; /* Spazio interno per renderlo più spesso */
+}
 </style>
