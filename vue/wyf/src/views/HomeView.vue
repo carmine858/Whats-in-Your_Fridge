@@ -9,11 +9,11 @@
     <!-- Search and Filters -->
     <div class=".search-and-filters">
       <v-autocomplete
-    class="custom-autocomplete"
-    label="Search"
-    :items="['pasta','pollo']"
-    variant="underlined"
-  ></v-autocomplete><br><br>
+        class="custom-autocomplete"
+        label="Search"
+        :items="['pasta','pollo']"
+        variant="underlined"
+      ></v-autocomplete><br><br>
 
       <!-- Chip di categoria -->
       <div class="category-chips">
@@ -40,7 +40,8 @@
         md="4"
       >
         <v-card class="recipe-card" max-width="374">
-          <v-img :src="recipe.immagine || defaultImage" height="150" cover></v-img>
+          <!-- Usa direttamente l'URL dell'immagine -->
+          <v-img :src="recipe.Image || defaultImage" height="150" cover></v-img>
           <v-card-text>
             <div class="recipe-header">
               <span class="recipe-title">{{ recipe.titolo }}</span>
@@ -49,7 +50,8 @@
               </v-chip>
             </div>
             <div class="recipe-meta">
-              <span>{{ recipe.tempo }}</span>
+              <span>{{ recipe.tempo }} | Difficoltà: {{ recipe.difficolta }}</span>
+              <p>{{ recipe.descrizione }}</p>
             </div>
           </v-card-text>
         </v-card>
@@ -131,7 +133,6 @@ export default {
   gap: 15px; /* Spaziatura tra barra di ricerca e chip */
   margin-bottom: 20px;
   align-items: center;
-
 }
 .search-bar {
   width: 100%;

@@ -3,23 +3,23 @@ const sqlite3 = require('sqlite3');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const fs = require('fs');
-const csv = require('csv-parser');
+
+
+const DBMock = require('./DBMock');  // Importiamo il DBMock per le ricette
+
 const app = express();
 const port = 3000;
 const axios = require('axios');
 
-
-
 app.use(cors());
 app.use(express.json());
 
-// Connessione al database SQLite
-let db = new sqlite3.Database('./database.db', (err) => {
+// Connessione al database SQLite per utenti
+const db = new sqlite3.Database('./database.db', (err) => {
     if (err) {
         return console.error(err.message);
     }
-    console.log('Connesso al database');
+    console.log('Connesso al database SQLite per utenti');
 });
 
 // Creazione tabella utenti
@@ -34,19 +34,8 @@ db.run(`CREATE TABLE IF NOT EXISTS registrazione (
     username TEXT UNIQUE
 )`);
 
-// Creazione tabella ricette
-db.run(`CREATE TABLE IF NOT EXISTS ricette (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    titolo TEXT,
-    immagine TEXT,
-    difficolta TEXT,
-    tipo TEXT,
-    descrizione TEXT,
-    ingredienti TEXT,
-    istruzioni TEXT,
-    tempo TEXT,
-    rating REAL
-)`);
+// Creazione tabella ricette nel mock
+const mockDb = new DBMock();
 
 // Endpoint per registrazione utenti
 app.post('/registrazione', async (req, res) => {
@@ -107,129 +96,48 @@ function authenticateToken(req, res, next) {
     });
 }
 
-// Endpoint protetto di esempio
-app.get('/profile', authenticateToken, (req, res) => {
-    res.json({ message: 'Benvenuto nel tuo profilo!', user: req.user });
-});
-
-// Endpoint per ottenere tutte le ricette
+// Endpoint per ottenere tutte le ricette (dal mock DB)
 app.get('/recipes', (req, res) => {
     const { tipo, search } = req.query;
-    let query = 'SELECT * FROM ricette';
-    const params = [];
+    let recipes = mockDb.getAllRecipes(); // Metodo che restituisce tutte le ricette dal mock (modificare a seconda della struttura del mock)
 
+    // Se sono presenti parametri di ricerca, filtriamo
     if (tipo || search) {
-        query += ' WHERE ';
-        if (tipo) {
-            query += 'tipo = ? ';
-            params.push(tipo);
-        }
-        if (search) {
-            if (tipo) query += 'AND ';
-            query += 'LOWER(titolo) LIKE ? ';
-            params.push(`%${search.toLowerCase()}%`);
-        }
+        recipes = recipes.filter(recipe => {
+            if (tipo && recipe.tipo !== tipo) return false;
+            if (search && !recipe.titolo.toLowerCase().includes(search.toLowerCase())) return false;
+            return true;
+        });
     }
 
-    db.all(query, params, (err, rows) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ recipes: rows });
-    });
+    res.json({ recipes: recipes });
 });
 
-// Funzione per importare ricette da un file CSV
-function importRicetteFromCSV(filePath) {
-    fs.createReadStream(filePath)
-        .pipe(csv())
-        .on('data', (row) => {
-            const { Titolo, Immagine, Difficoltà, Tipo, Breve_descrizione, Ingredienti, Istruzioni, Tempo, Rating } = row;
-
-            db.run(
-                `INSERT INTO ricette (titolo, immagine, difficolta, tipo, descrizione, ingredienti, istruzioni, tempo, rating)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                [Titolo, Immagine, Difficoltà, Tipo, Breve_descrizione, Ingredienti, Istruzioni, Tempo, parseFloat(Rating)],
-                (err) => {
-                    if (err) {
-                        console.error("Errore durante l'inserimento nel database:", err.message);
-                    }
-                }
-            );
-        })
-        .on('end', () => {
-            console.log('Importazione completata.');
-        });
-}
-
-// Importa dati di esempio da un file CSV
-importRicetteFromCSV('./ricette.csv');
-
-// Endpoint per ottenere una singola ricetta
+// Endpoint per ottenere una singola ricetta (dal mock DB)
 app.get('/recipes/:id', (req, res) => {
     const { id } = req.params;
 
-    db.get('SELECT * FROM ricette WHERE id = ?', [id], (err, row) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (!row) {
-            return res.status(404).json({ message: 'Ricetta non trovata' });
-        }
-        res.json(row);
-    });
+    const recipe = mockDb.getUserById(id); // Metodo che restituisce una ricetta per ID dal mock
+    if (!recipe) {
+        return res.status(404).json({ message: 'Ricetta non trovata' });
+    }
+
+    res.json(recipe);
 });
 
-// Endpoint per aggiornare una ricetta
-app.put('/recipes/:id', (req, res) => {
-    const { id } = req.params;
+// Endpoint per aggiungere una nuova ricetta (al mock DB)
+app.post('/recipes', (req, res) => {
     const { titolo, immagine, difficolta, tipo, descrizione, ingredienti, istruzioni, tempo, rating } = req.body;
 
-    db.run(
-        `UPDATE ricette SET titolo = ?, immagine = ?, difficolta = ?, tipo = ?, descrizione = ?, ingredienti = ?, istruzioni = ?, tempo = ?, rating = ?
-         WHERE id = ?`,
-        [titolo, immagine, difficolta, tipo, descrizione, ingredienti, istruzioni, tempo, rating, id],
-        function (err) {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            if (this.changes === 0) {
-                return res.status(404).json({ message: 'Ricetta non trovata' });
-            }
-            res.json({ message: 'Ricetta aggiornata con successo' });
-        }
-    );
-});
-
-// Chiusura del database al termine del processo
-process.on('SIGINT', () => {
-    db.close((err) => {
-        if (err) {
-            console.error(err.message);
-        }
-        console.log('Database chiuso');
-        process.exit(0);
-    });
-});
-
-app.get('/api/spoonacular/recipes', async (req, res) => {
-    const { ingredients, number } = req.query;
-    
-    const apiKey = '158daca1e25e47adb88461d034c43da9'; // Chiave API Spoonacular
-    const apiUrl = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${ingredients}&number=${number || 2}`;
-
     try {
-        const response = await axios.get(apiUrl);
-        res.json(response.data);
-    } catch (error) {
-        console.error('Errore chiamando l\'API Spoonacular:', error.message);
-        res.status(500).json({ error: 'Errore durante la chiamata all\'API Spoonacular' });
+        const newRecipe = mockDb.createUser({
+            titolo, immagine, difficolta, tipo, descrizione, ingredienti, istruzioni, tempo, rating
+        }); // Usa un metodo mock per creare una nuova ricetta
+        res.json({ message: 'Nuova ricetta creata', recipe: newRecipe });
+    } catch (err) {
+        res.status(500).json({ error: 'Errore durante la creazione della ricetta' });
     }
 });
-
-
-
-//URL = https://api.spoonacular.com/recipes/findByIngredients?apiKey=158daca1e25e47adb88461d034c43da9&ingredients=apples,+flour,+sugar&number=2
 
 // Avvio del server
 app.listen(port, () => {
