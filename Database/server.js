@@ -7,6 +7,9 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const app = express();
 const port = 3000;
+const axios = require('axios');
+
+
 
 app.use(cors());
 app.use(express.json());
@@ -208,6 +211,25 @@ process.on('SIGINT', () => {
         process.exit(0);
     });
 });
+
+app.get('/api/spoonacular/recipes', async (req, res) => {
+    const { ingredients, number } = req.query;
+    
+    const apiKey = '158daca1e25e47adb88461d034c43da9'; // Chiave API Spoonacular
+    const apiUrl = `https://api.spoonacular.com/recipes/findByIngredients?apiKey=${apiKey}&ingredients=${ingredients}&number=${number || 2}`;
+
+    try {
+        const response = await axios.get(apiUrl);
+        res.json(response.data);
+    } catch (error) {
+        console.error('Errore chiamando l\'API Spoonacular:', error.message);
+        res.status(500).json({ error: 'Errore durante la chiamata all\'API Spoonacular' });
+    }
+});
+
+
+
+//URL = https://api.spoonacular.com/recipes/findByIngredients?apiKey=158daca1e25e47adb88461d034c43da9&ingredients=apples,+flour,+sugar&number=2
 
 // Avvio del server
 app.listen(port, () => {

@@ -1,9 +1,7 @@
 <template>
   <div id="app" class="background-div">
-
-
-    <!-- Mostra la navbar solo se non sei nelle pagine di login o registrazione -->
-    <v-layout v-if="!isAuthPage" class="overflow-visible" style="height: 56px;">
+    <!-- Navbar visibile solo quando non sei nelle pagine di login o registrazione -->
+    <v-layout v-if="!isAuthPage" class="navbar-container">
       <v-bottom-navigation
         v-model="value"
         color="orange"
@@ -13,31 +11,29 @@
           <v-icon>mdi-home</v-icon>
           Home
         </v-btn>
-
         <v-btn @click="navigateTo('/recipe')">
           <v-icon>mdi-food</v-icon>
           Ricette
         </v-btn>
         <v-btn @click="navigateTo('#')">
-          <v-icon> mdi-magnify</v-icon>
-          <span>Cerca</span>
+          <v-icon>mdi-magnify</v-icon>
+          Cerca
         </v-btn>
         <v-btn @click="navigateTo('#')">
-          <v-icon> mdi-cart</v-icon>
-          <span>Lista</span>
+          <v-icon>mdi-cart</v-icon>
+          Lista
         </v-btn>
-
         <v-btn @click="navigateTo('/profile')">
           <v-icon>mdi-account</v-icon>
-          <span>Profilo</span>
+          Profilo
         </v-btn>
-        
-       
       </v-bottom-navigation>
     </v-layout>
 
-    <!-- router-view per mostrare le pagine -->
-    <router-view />
+    <!-- Contenuto principale centrato -->
+    <div class="content-container">
+      <router-view />
+    </div>
   </div>
 </template>
 
@@ -64,41 +60,33 @@ export default {
 </script>
 
 <style>
-
-.app-title {
-  font-family: 'Pacifico', cursive; /* Font a tema */
-  font-size: 3rem;
-  color: white;
-  text-align: center;
-  margin-bottom: -80px;
-  margin-top: 20px;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: orange;
-}
-
+/* Stile globale per il layout */
 .background-div {
-background-image: url('@/assets/sfondo.jpg'); /* Usa il percorso dell'immagine */
-background-size: cover; /* Copre interamente l'area */
-background-position: center;
-background-repeat: no-repeat;
-width: 100%;
-min-height: 100vh; /* Copre l'altezza della finestra */
-display: flex;
-justify-content: center;
-align-items: center;
+  background-image: url('@/assets/sfondo.jpg'); /* Immagine di sfondo */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  min-height: 100vh; /* Altezza intera finestra */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Navbar in basso e contenuto principale centrato */
+}
+
+/* Navbar */
+.navbar-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+/* Contenuto principale */
+.content-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 </style>
-
-
-

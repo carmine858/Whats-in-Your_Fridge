@@ -7,13 +7,13 @@
     </div>
 
     <!-- Search and Filters -->
-    <div class="search-and-filters">
+    <div class=".search-and-filters">
       <v-autocomplete
     class="custom-autocomplete"
-    label="Autocomplete"
-    :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+    label="Search"
+    :items="['pasta','pollo']"
     variant="underlined"
-  ></v-autocomplete>
+  ></v-autocomplete><br><br>
 
       <!-- Chip di categoria -->
       <div class="category-chips">
@@ -99,7 +99,7 @@ export default {
     },
     selectCategory(category) {
       this.selectedCategory = category;
-      this.fetchRecipes(); // Aggiorna le ricette in base alla categoria
+      this.fetchRecipes(); 
     },
   },
   mounted() {
@@ -131,6 +131,7 @@ export default {
   gap: 15px; /* Spaziatura tra barra di ricerca e chip */
   margin-bottom: 20px;
   align-items: center;
+
 }
 .search-bar {
   width: 100%;
@@ -178,9 +179,8 @@ export default {
 }
 
 .custom-autocomplete {
-  background-color: white; /* Colore di sfondo */
-  border: 2px solid #ccc; /* Bordo più spesso */
-  border-radius: 8px; /* Arrotonda i bordi, opzionale */
-  padding: 4px; /* Spazio interno per renderlo più spesso */
+  color: white; /* Colore di sfondo */
+  width: 100%;
+  max-width: 1550px;
 }
 </style>
