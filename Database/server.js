@@ -3,7 +3,9 @@ const sqlite3 = require('sqlite3');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const { OAuth2Client } = require('google-auth-library');
+const CLIENT_ID = 'AIzaSyABQF_0-U6qqHYKtIB_sh_IcII-AEupEGA.apps.googleusercontent.com';
+const client = new OAuth2Client(CLIENT_ID);
 
 const DBMock = require('./DBMock');  // Importiamo il DBMock per le ricette
 
@@ -132,12 +134,49 @@ app.post('/recipes', (req, res) => {
     try {
         const newRecipe = mockDb.createUser({
             titolo, immagine, difficolta, tipo, descrizione, ingredienti, istruzioni, tempo, rating
-        }); // Usa un metodo mock per creare una nuova ricetta
+        }); 
         res.json({ message: 'Nuova ricetta creata', recipe: newRecipe });
     } catch (err) {
         res.status(500).json({ error: 'Errore durante la creazione della ricetta' });
     }
 });
+
+app.post('/auth/google', async (req, res) => {
+    const { idToken } = req.body;
+  
+    try {
+      // Verifica il token ID con Google
+      const ticket = await client.verifyIdToken({
+        idToken,
+        audience: CLIENT_ID,
+      });
+  
+      const payload = ticket.getPayload();
+      const userId = payload.sub;
+  
+      console.log('Utente verificato:', payload);
+  
+      // Effettua il login o crea un nuovo utente nel database
+      // Ad esempio, puoi cercare l'utente nel tuo database e, se non esiste, crearlo:
+      let user = await User.findOne({ googleId: userId });
+      if (!user) {
+        user = new User({
+          googleId: userId,
+          email: payload.email,
+          name: payload.name,
+          picture: payload.picture,
+        });
+        await user.save();
+      }
+  
+      // Ritorna il token JWT o altro sistema di sessione
+      res.json({ message: 'Login con Google riuscito', user });
+    } catch (error) {
+      console.error('Errore nella verifica del token ID:', error);
+      res.status(401).json({ message: 'Token ID non valido' });
+    }
+  });
+
 
 // Avvio del server
 app.listen(port, () => {

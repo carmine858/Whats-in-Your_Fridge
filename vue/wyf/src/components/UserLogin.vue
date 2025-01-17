@@ -1,66 +1,58 @@
 <template>
-  <!-- Contenitore principale con sfondo -->
- 
-    <v-row justify="center" align="center" class="login-row">
-      <v-col cols="12" lg="6" md="8" sm="10">
-        <v-card class="login-card">
-          <v-alert
-            v-if="showAlert"
-            :type="alertType"
-            dismissible
-            @input="showAlert = false"
-          >
-            {{ alertMessage }}
-          </v-alert>
+   <v-row justify="center" align="center" class="login-row">
+    <v-col cols="12" lg="6" md="8" sm="10">
+      <v-card class="login-card">
+        <v-card-title class="text-center">
+          <h1 class="headline">WHAT'S IN YOUR FRIDGE?</h1><br />
+          <h3>Login</h3>
+        </v-card-title>
+        <v-card-text>
+          <v-form ref="form" v-model="valid">
+            <v-text-field
+              v-model="username"
+              :error-messages="errorMessages.username"
+              :rules="[(v) => !!v || 'Username è obbligatorio']"
+              label="Username"
+              placeholder="Inserisci il tuo username"
+              required
+              prepend-icon="mdi-account"
+            ></v-text-field>
+            <v-text-field
+              v-model="password"
+              :error-messages="errorMessages.password"
+              :rules="[(v) => !!v || 'Password è obbligatoria']"
+              label="Password"
+              type="password"
+              placeholder="Inserisci la tua password"
+              required
+              prepend-icon="mdi-lock"
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
+        <v-card-actions class="d-flex justify-center">
+          <v-btn color="orange" @click="submit" class="submit-btn">Accedi</v-btn>
+          <v-btn text @click="resetForm" class="ml-2">Annulla</v-btn>
+        </v-card-actions>
 
-          <v-card-title class="text-center">
-            <h1 class="headline"> WHAT'S IN YOUR FRIDGE?</h1><br>
-            <h3>Login</h3>
-          </v-card-title>
-          <v-card-text>
-            <v-form ref="form" v-model="valid">
-              <v-text-field
-                v-model="username"
-                :error-messages="errorMessages.username"
-                :rules="[(v) => !!v || 'Username è obbligatorio']"
-                label="Username"
-                placeholder="Inserisci il tuo username"
-                required
-                prepend-icon="mdi-account"
-              ></v-text-field>
+        <v-divider></v-divider>
 
-              <v-text-field
-                v-model="password"
-                :error-messages="errorMessages.password"
-                :rules="[(v) => !!v || 'Password è obbligatoria']"
-                label="Password"
-                type="password"
-                placeholder="Inserisci la tua password"
-                required
-                prepend-icon="mdi-lock"
-              ></v-text-field>
-            </v-form>
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions class="d-flex justify-center">
-            <v-btn color="orange" @click="submit" class="submit-btn">Accedi</v-btn>
-            <v-btn text @click="resetForm" class="ml-2">Annulla</v-btn>
-          </v-card-actions>
-
-          <v-card-actions class="d-flex justify-center">
-            <p class="text-center">
-              Non hai un account?
-              <a href="#" @click="goToRegister" class="register-link">Registrati</a>
-            </p>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-
+        <!-- Pulsante Google -->
+        <v-card-actions class="d-flex justify-center">
+          <div id="google-button"></div>
+          <p class="text-center">
+            Non hai un account?
+            <a href="#" @click="goToRegister" class="register-link">Registrati</a>
+          </p>
+        </v-card-actions>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
+/* global google */
 import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -71,8 +63,8 @@ export default {
         username: '',
         password: ''
       },
-      showAlert: false,      
-      alertMessage: '',      
+      showAlert: false,
+      alertMessage: '',
       alertType: 'success'
     };
   },
@@ -83,10 +75,8 @@ export default {
         password: ''
       };
 
-
       if (!this.username) this.errorMessages.username = 'Username è obbligatorio';
       if (!this.password) this.errorMessages.password = 'Password è obbligatoria';
-
 
       if (Object.values(this.errorMessages).every((msg) => msg === '')) {
         const loginData = {
@@ -94,20 +84,19 @@ export default {
           password: this.password
         };
 
-       
-       axios.post('http://localhost:3000/login', loginData)
+        axios.post('http://localhost:3000/login', loginData)
           .then(() => {
             this.alertMessage = 'Accesso avvenuto con successo!';
             this.alertType = 'success';
             this.showAlert = true;
 
             setTimeout(() => {
-              this.$router.push('/home'); 
-            }, 1500); 
+              this.$router.push('/home');
+            }, 1500);
           })
           .catch(error => {
             console.error('Errore durante il login:', error);
-            this.errorMessages.password = 'Credenziali non valide'; 
+            this.errorMessages.password = 'Credenziali non valide';
           });
       }
     },
@@ -121,39 +110,79 @@ export default {
     },
     goToRegister() {
       this.$router.push('/register');
+    },
+    handleCredentialResponse(response) {
+      console.log('Token ID di Google:', response.credential);
+
+      // Invia il token ID al tuo backend
+      axios.post('http://localhost:3000/auth/google', {
+        idToken: response.credential
+      })
+      .then(() => {
+        this.alertMessage = 'Accesso con Google riuscito!';
+        this.alertType = 'success';
+        this.showAlert = true;
+
+        setTimeout(() => {
+          this.$router.push('/home');
+        }, 1500);
+      })
+      .catch(error => {
+        console.error('Errore durante il login con Google:', error);
+        this.alertMessage = 'Errore durante il login con Google';
+        this.alertType = 'error';
+        this.showAlert = true;
+      });
     }
+  },
+  mounted() {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.onload = () => {
+      google.accounts.id.initialize({
+        client_id: 'AIzaSyABQF_0-U6qqHYKtIB_sh_IcII-AEupEGA.apps.googleusercontent.com',
+        callback: this.handleCredentialResponse
+      });
+      google.accounts.id.renderButton(
+        document.getElementById('google-button'),
+        { theme: 'outline', size: 'large' }
+      );
+    };
+    document.head.appendChild(script);
   }
 };
 </script>
 
-<style scoped>
 
+<style scoped>
+#google-button {
+  margin: 20px 0;
+}
 .headline {
-font-family: fantasy, cursive;
-color: #f4a53e;
+  font-family: fantasy, cursive;
+  color: #f4a53e;
 }
 
 .login-row {
-min-height: 100vh; 
+  min-height: 100vh;
 }
 
 .login-card {
-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-border-radius: 10px;
-padding: 20px;
-background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #ffffff;
 
 }
 
 
 .submit-btn {
-transition: background-color 0.3s;
+  transition: background-color 0.3s;
 }
 
 .submit-btn:hover {
-background-color: #e5c499;
-color: #ffffff;
+  background-color: #e5c499;
+  color: #ffffff;
 }
 </style>
-
-  
