@@ -4,7 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
-const CLIENT_ID = 'AIzaSyABQF_0-U6qqHYKtIB_sh_IcII-AEupEGA.apps.googleusercontent.com';
+const CLIENT_ID = '132257619357-ilvrflcd0vno5o18tq4n16kkpgitq523.apps.googleusercontent.com';
 const client = new OAuth2Client(CLIENT_ID);
 
 const DBMock = require('./DBMock');  // Importiamo il DBMock per le ricette
@@ -145,37 +145,71 @@ app.post('/auth/google', async (req, res) => {
     const { idToken } = req.body;
   
     try {
-      // Verifica il token ID con Google
-      const ticket = await client.verifyIdToken({
-        idToken,
-        audience: CLIENT_ID,
-      });
-  
-      const payload = ticket.getPayload();
-      const userId = payload.sub;
-  
-      console.log('Utente verificato:', payload);
-  
-      // Effettua il login o crea un nuovo utente nel database
-      // Ad esempio, puoi cercare l'utente nel tuo database e, se non esiste, crearlo:
-      let user = await User.findOne({ googleId: userId });
-      if (!user) {
-        user = new User({
-          googleId: userId,
-          email: payload.email,
-          name: payload.name,
-          picture: payload.picture,
+        // Verifica il token ID con Google
+        const ticket = await client.verifyIdToken({
+            idToken,
+            audience: CLIENT_ID, // Deve corrispondere al CLIENT_ID della tua app Google
         });
-        await user.save();
-      }
   
-      // Ritorna il token JWT o altro sistema di sessione
-      res.json({ message: 'Login con Google riuscito', user });
+        const payload = ticket.getPayload();
+        const email = payload.email;
+        const nome = payload.given_name || ''; // Nome dell'utente
+        const cognome = payload.family_name || ''; // Cognome dell'utente
+        const username = email.split('@')[0]; // Usa l'email per generare un username univoco
+        const favourite_dish = ''; // Puoi lasciare vuoto o gestire questo campo diversamente
+        const data = new Date().toISOString().split('T')[0]; // Data di registrazione
+
+        console.log('Utente verificato:', payload);
+
+        // Controlla se l'utente esiste già
+        db.get(`SELECT * FROM registrazione WHERE email = ?`, [email], (err, user) => {
+            if (err) {
+                return res.status(500).json({ error: 'Errore nel database' });
+            }
+
+            if (!user) {
+                // Se l'utente non esiste, crealo
+                db.run(
+                    `INSERT INTO registrazione (nome, cognome, data, email, password, favourite_dish, username)
+                     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                    [nome, cognome, data, email, null, favourite_dish, username],
+                    function (err) {
+                        if (err) {
+                            return res.status(500).json({ error: 'Errore nel salvataggio dell\'utente' });
+                        }
+                        res.json({ 
+                            message: 'Registrazione con Google completata',
+                            user: { id: this.lastID, nome, cognome, email, username, favourite_dish }
+                        });
+                    }
+                );
+            } else {
+                // L'utente esiste già, ritorna le sue informazioni
+                res.json({ 
+                    message: 'Login con Google riuscito', 
+                    user 
+                });
+            }
+        });
     } catch (error) {
-      console.error('Errore nella verifica del token ID:', error);
-      res.status(401).json({ message: 'Token ID non valido' });
+        console.error('Errore nella verifica del token ID:', error);
+        res.status(401).json({ message: 'Token ID non valido' });
     }
-  });
+});
+
+app.get('/userinfo', authenticateToken, (req, res) => {
+    const userId = req.user.userId; // `userId` dovrebbe essere salvato nel token JWT durante il login
+
+    db.get(`SELECT username FROM registrazione WHERE id = ?`, [userId], (err, row) => {
+        if (err) {
+            return res.status(500).json({ error: 'Errore nel recupero delle informazioni utente' });
+        }
+        if (!row) {
+            return res.status(404).json({ error: 'Utente non trovato' });
+        }
+        res.json({ username: row.username });
+    });
+});
 
 
 // Avvio del server

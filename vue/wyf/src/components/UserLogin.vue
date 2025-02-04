@@ -38,11 +38,12 @@
 
         <!-- Pulsante Google -->
         <v-card-actions class="d-flex justify-center">
-          <div id="google-button"></div>
           <p class="text-center">
             Non hai un account?
             <a href="#" @click="goToRegister" class="register-link">Registrati</a>
-          </p>
+          </p><br><br>
+          <div id="google-button"></div><br>
+        
         </v-card-actions>
       </v-card>
     </v-col>
@@ -141,7 +142,7 @@ export default {
     script.async = true;
     script.onload = () => {
       google.accounts.id.initialize({
-        client_id: 'AIzaSyABQF_0-U6qqHYKtIB_sh_IcII-AEupEGA.apps.googleusercontent.com',
+        client_id: '132257619357-ilvrflcd0vno5o18tq4n16kkpgitq523.apps.googleusercontent.com',
         callback: this.handleCredentialResponse
       });
       google.accounts.id.renderButton(

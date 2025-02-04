@@ -2,7 +2,7 @@
   <v-container>
     <!-- Header -->
     <div class="header">
-      <h2 class="greeting">Hello Andrea</h2>
+      <h2 class="greeting">Hello {{username}}</h2>
       <p class="subheader">What are you cooking today?</p>
     </div>
 
@@ -71,7 +71,8 @@ export default {
       selectedCategory: "All",
       categories: ["All", "Indian", "Italian", "Asian", "Chinese"],
       loading: false,
-      defaultImage: "https://via.placeholder.com/150", // Immagine predefinita
+      defaultImage: "https://via.placeholder.com/150",
+      username: "", // Nome dell'utente // Immagine predefinita
     };
   },
   methods: {
@@ -103,9 +104,24 @@ export default {
       this.selectedCategory = category;
       this.fetchRecipes(); 
     },
+    fetchUserInfo() {
+      // Esempio: ottieni le informazioni dell'utente dal server
+      axios
+        .get("http://localhost:3000/userinfo", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((response) => {
+          this.username = response.data.username || "Guest";
+        })
+        .catch((error) => {
+          console.error("Errore durante il caricamento delle informazioni utente:", error);
+          this.username = "Guest"; // Fallback in caso di errore
+        });
+    },
   },
   mounted() {
     this.fetchRecipes();
+    this.fetchUserInfo(); 
   },
 };
 </script>

@@ -4,10 +4,10 @@ class DBMock {
         this.recipes = [
             {
                 id: 1,
-                Image: "",
+                Image: "/img/pasta.jpg",
                 titolo: "Pasta al pomodoro",
                 difficolta: "facile",
-                tipo: "primo",
+                tipo: "Italian",
                 descrizione: "Un classico piatto italiano semplice e gustoso.",
                 ingredienti_essenziali: ["pasta", "pomodoro", "basilico", "sale", "olio"],
                 ingredienti_aggiuntivi: ["parmigiano"],
@@ -18,7 +18,7 @@ class DBMock {
                 Image: "/img/tiramisu.jpg",
                 titolo: "Tiramisù",
                 difficolta: "media",
-                tipo: "dessert",
+                tipo: "Italian",
                 descrizione: "Il dolce italiano per eccellenza.",
                 ingredienti_essenziali: ["savoiardi", "mascarpone", "uova", "zucchero", "caffè"],
                 ingredienti_aggiuntivi: ["cacao"],
