@@ -78,8 +78,14 @@ app.post('/login', async (req, res) => {
                 return res.status(401).json({ message: 'Credenziali non valide' });
             }
 
-            const token = jwt.sign({ userId: user.id }, 'your_jwt_secret', { expiresIn: '1h' });
-            res.json({ message: 'Login avvenuto con successo', token });
+            const token = jwt.sign({ userId: user.id, email: user.email }, 'your_jwt_secret', { expiresIn: '1h' });
+
+            res.json({
+                message: 'Login avvenuto con successo',
+                token,
+                email: user.email, // Aggiungi l'email per salvarla nel client
+                username: user.username
+            });
         });
     } catch (error) {
         res.status(500).json({ error: 'Errore durante il login' });
@@ -143,25 +149,24 @@ app.post('/recipes', (req, res) => {
 
 app.post('/auth/google', async (req, res) => {
     const { idToken } = req.body;
-  
+
     try {
         // Verifica il token ID con Google
         const ticket = await client.verifyIdToken({
             idToken,
-            audience: CLIENT_ID, // Deve corrispondere al CLIENT_ID della tua app Google
+            audience: CLIENT_ID, 
         });
-  
+
         const payload = ticket.getPayload();
         const email = payload.email;
-        const nome = payload.given_name || ''; // Nome dell'utente
-        const cognome = payload.family_name || ''; // Cognome dell'utente
-        const username = email.split('@')[0]; // Usa l'email per generare un username univoco
-        const favourite_dish = ''; // Puoi lasciare vuoto o gestire questo campo diversamente
-        const data = new Date().toISOString().split('T')[0]; // Data di registrazione
+        const nome = payload.given_name || '';
+        const cognome = payload.family_name || '';
+        const username = email.split('@')[0];
+        const favourite_dish = '';
+        const data = new Date().toISOString().split('T')[0];
 
         console.log('Utente verificato:', payload);
 
-        // Controlla se l'utente esiste già
         db.get(`SELECT * FROM registrazione WHERE email = ?`, [email], (err, user) => {
             if (err) {
                 return res.status(500).json({ error: 'Errore nel database' });
@@ -177,16 +182,23 @@ app.post('/auth/google', async (req, res) => {
                         if (err) {
                             return res.status(500).json({ error: 'Errore nel salvataggio dell\'utente' });
                         }
+                        const userId = this.lastID;
+                        const token = jwt.sign({ userId }, 'your_jwt_secret', { expiresIn: '1h' });
+
                         res.json({ 
                             message: 'Registrazione con Google completata',
-                            user: { id: this.lastID, nome, cognome, email, username, favourite_dish }
+                            token,
+                            user: { id: userId, nome, cognome, email, username, favourite_dish }
                         });
                     }
                 );
             } else {
-                // L'utente esiste già, ritorna le sue informazioni
+                // L'utente esiste già, genera un token JWT
+                const token = jwt.sign({ userId: user.id }, 'your_jwt_secret', { expiresIn: '1h' });
+
                 res.json({ 
                     message: 'Login con Google riuscito', 
+                    token,
                     user 
                 });
             }
@@ -197,19 +209,21 @@ app.post('/auth/google', async (req, res) => {
     }
 });
 
-app.get('/userinfo', authenticateToken, (req, res) => {
-    const userId = req.user.userId; // `userId` dovrebbe essere salvato nel token JWT durante il login
 
-    db.get(`SELECT username FROM registrazione WHERE id = ?`, [userId], (err, row) => {
+app.get('/userinfo', authenticateToken, (req, res) => {
+    const userId = req.user.userId;
+
+    db.get(`SELECT nome, cognome, email, username, data FROM registrazione WHERE id = ?`, [userId], (err, row) => {
         if (err) {
             return res.status(500).json({ error: 'Errore nel recupero delle informazioni utente' });
         }
         if (!row) {
             return res.status(404).json({ error: 'Utente non trovato' });
         }
-        res.json({ username: row.username });
+        res.json(row); // Restituisce le informazioni dell'utente
     });
 });
+
 
 
 // Avvio del server

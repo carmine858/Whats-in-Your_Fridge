@@ -72,7 +72,7 @@ export default {
       categories: ["All", "Indian", "Italian", "Asian", "Chinese"],
       loading: false,
       defaultImage: "https://via.placeholder.com/150",
-      username: "", // Nome dell'utente // Immagine predefinita
+      username: "",
     };
   },
   methods: {

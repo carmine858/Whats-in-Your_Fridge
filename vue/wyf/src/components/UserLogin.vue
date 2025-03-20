@@ -1,9 +1,10 @@
 <template>
-   <v-row justify="center" align="center" class="login-row">
+  <v-row justify="center" align="center" class="login-row">
     <v-col cols="12" lg="6" md="8" sm="10">
       <v-card class="login-card">
         <v-card-title class="text-center">
-          <h1 class="headline">WHAT'S IN YOUR FRIDGE?</h1><br />
+          <h1 class="headline">WHAT'S IN YOUR FRIDGE?</h1>
+          <br />
           <h3>Login</h3>
         </v-card-title>
         <v-card-text>
@@ -41,9 +42,10 @@
           <p class="text-center">
             Non hai un account?
             <a href="#" @click="goToRegister" class="register-link">Registrati</a>
-          </p><br><br>
-          <div id="google-button"></div><br>
-        
+          </p>
+          <br /><br />
+          <div id="google-button"></div>
+          <br />
         </v-card-actions>
       </v-card>
     </v-col>
@@ -52,114 +54,119 @@
 
 <script>
 /* global google */
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   data() {
     return {
       valid: false,
-      username: '',
-      password: '',
+      username: "",
+      password: "",
       errorMessages: {
-        username: '',
-        password: ''
+        username: "",
+        password: "",
       },
       showAlert: false,
-      alertMessage: '',
-      alertType: 'success'
+      alertMessage: "",
+      alertType: "success",
     };
   },
   methods: {
-    submit() {
+    async submit() {
       this.errorMessages = {
-        username: '',
-        password: ''
+        username: "",
+        password: "",
       };
 
-      if (!this.username) this.errorMessages.username = 'Username è obbligatorio';
-      if (!this.password) this.errorMessages.password = 'Password è obbligatoria';
+      if (!this.username) this.errorMessages.username = "Username è obbligatorio";
+      if (!this.password) this.errorMessages.password = "Password è obbligatoria";
 
-      if (Object.values(this.errorMessages).every((msg) => msg === '')) {
-        const loginData = {
-          username: this.username,
-          password: this.password
-        };
+      if (Object.values(this.errorMessages).every((msg) => msg === "")) {
+        try {
+          const loginData = {
+            username: this.username,
+            password: this.password,
+          };
 
-        axios.post('http://localhost:3000/login', loginData)
-          .then(() => {
-            this.alertMessage = 'Accesso avvenuto con successo!';
-            this.alertType = 'success';
-            this.showAlert = true;
+          const response = await axios.post("http://localhost:3000/login", loginData);
 
-            setTimeout(() => {
-              this.$router.push('/home');
-            }, 1500);
-          })
-          .catch(error => {
-            console.error('Errore durante il login:', error);
-            this.errorMessages.password = 'Credenziali non valide';
-          });
+          const { token, email, username } = response.data;
+
+          localStorage.setItem("token", token);
+          localStorage.setItem("email", email);
+          localStorage.setItem("username", username);
+          localStorage.setItem("loggedIn", "true");
+
+          this.$router.push("/home");
+        } catch (error) {
+          console.error("Errore durante il login:", error);
+          this.errorMessages.password = "Credenziali non valide";
+        }
       }
     },
     resetForm() {
-      this.username = '';
-      this.password = '';
+      this.username = "";
+      this.password = "";
       this.errorMessages = {
-        username: '',
-        password: ''
+        username: "",
+        password: "",
       };
     },
     goToRegister() {
-      this.$router.push('/register');
+      this.$router.push("/register");
     },
     handleCredentialResponse(response) {
-      console.log('Token ID di Google:', response.credential);
+      console.log("Token ID di Google:", response.credential);
 
-      // Invia il token ID al tuo backend
-      axios.post('http://localhost:3000/auth/google', {
-        idToken: response.credential
-      })
-      .then(() => {
-        this.alertMessage = 'Accesso con Google riuscito!';
-        this.alertType = 'success';
-        this.showAlert = true;
+      axios
+        .post("http://localhost:3000/auth/google", {
+          idToken: response.credential,
+        })
+        .then(({ data }) => {
+          this.alertMessage = "Accesso con Google riuscito!";
+          this.alertType = "success";
+          this.showAlert = true;
 
-        setTimeout(() => {
-          this.$router.push('/home');
-        }, 1500);
-      })
-      .catch(error => {
-        console.error('Errore durante il login con Google:', error);
-        this.alertMessage = 'Errore durante il login con Google';
-        this.alertType = 'error';
-        this.showAlert = true;
-      });
-    }
+          // Salva il token e le informazioni di autenticazione
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("googleAuth", "true");
+
+          setTimeout(() => {
+            this.$router.push("/home");
+          }, 1500);
+        })
+        .catch((error) => {
+          console.error("Errore durante il login con Google:", error);
+          this.alertMessage = "Errore durante il login con Google";
+          this.alertType = "error";
+          this.showAlert = true;
+        });
+    },
   },
   mounted() {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.onload = () => {
       google.accounts.id.initialize({
-        client_id: '132257619357-ilvrflcd0vno5o18tq4n16kkpgitq523.apps.googleusercontent.com',
-        callback: this.handleCredentialResponse
+        client_id: "132257619357-ilvrflcd0vno5o18tq4n16kkpgitq523.apps.googleusercontent.com",
+        callback: this.handleCredentialResponse,
       });
-      google.accounts.id.renderButton(
-        document.getElementById('google-button'),
-        { theme: 'outline', size: 'large' }
-      );
+      google.accounts.id.renderButton(document.getElementById("google-button"), {
+        theme: "outline",
+        size: "large",
+      });
     };
     document.head.appendChild(script);
-  }
+  },
 };
 </script>
-
 
 <style scoped>
 #google-button {
   margin: 20px 0;
 }
+
 .headline {
   font-family: fantasy, cursive;
   color: #f4a53e;
@@ -174,9 +181,7 @@ export default {
   border-radius: 10px;
   padding: 20px;
   background-color: #ffffff;
-
 }
-
 
 .submit-btn {
   transition: background-color 0.3s;

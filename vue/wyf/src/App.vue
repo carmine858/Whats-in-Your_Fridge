@@ -67,7 +67,7 @@ export default {
   background-position: center;
   background-repeat: no-repeat;
   width: 100%;
-  min-height: 100vh; /* Altezza intera finestra */
+  min-height: 100%; /* Altezza intera finestra */
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Navbar in basso e contenuto principale centrato */
