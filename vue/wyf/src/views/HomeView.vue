@@ -133,12 +133,12 @@ export default {
   margin-bottom: 20px;
 }
 .greeting {
-  font-size: 24px;
+  font-size: 29px;
   color: #f4a53e;
 }
 .subheader {
-  font-size: 16px;
-  color: #888;
+  font-size: 26px;
+  color: #ffffff;
   margin-bottom: 20px;
 }
 
@@ -165,10 +165,11 @@ export default {
   color: white !important;
 }
 
-/* Griglia delle ricette */
+/* Griglia delle ricette*/
 .recipe-grid {
   margin-top: 20px;
 }
+  
 .recipe-card {
   border-radius: 12px;
   display: flex;

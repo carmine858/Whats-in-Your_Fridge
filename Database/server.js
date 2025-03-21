@@ -125,7 +125,7 @@ app.get('/recipes', (req, res) => {
 app.get('/recipes/:id', (req, res) => {
     const { id } = req.params;
 
-    const recipe = mockDb.getUserById(id); // Metodo che restituisce una ricetta per ID dal mock
+    const recipe = mockDb.getUserById(id); 
     if (!recipe) {
         return res.status(404).json({ message: 'Ricetta non trovata' });
     }
@@ -213,7 +213,7 @@ app.post('/auth/google', async (req, res) => {
 app.get('/userinfo', authenticateToken, (req, res) => {
     const userId = req.user.userId;
 
-    db.get(`SELECT nome, cognome, email, username, data FROM registrazione WHERE id = ?`, [userId], (err, row) => {
+    db.get(`SELECT nome, cognome, email, username, favourite_dish data FROM registrazione WHERE id = ?`, [userId], (err, row) => {
         if (err) {
             return res.status(500).json({ error: 'Errore nel recupero delle informazioni utente' });
         }

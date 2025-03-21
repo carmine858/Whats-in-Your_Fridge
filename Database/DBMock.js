@@ -24,6 +24,18 @@ class DBMock {
                 ingredienti_aggiuntivi: ["cacao"],
                 istruzioni: "Monta uova e zucchero, aggiungi mascarpone, e fai strati con savoiardi e caffè.",
             },
+            {
+                id: 3,
+                Image: "/img/butter_chicken.jpg",
+                titolo: "Butter Chicken",
+                difficolta: "media",
+                tipo: "Indian",
+                descrizione: "Un classico piatto indiano cremoso e speziato.",
+                ingredienti_essenziali: ["pollo", "burro", "pomodori", "panna", "garam masala"],
+                ingredienti_aggiuntivi: ["zenzero", "aglio", "coriandolo"],
+                istruzioni: "Marina il pollo con spezie e yogurt, poi cuocilo in una salsa cremosa a base di pomodoro e burro."
+            }
+            
         ];
         this.nextId = this.recipes.length ? this.recipes[this.recipes.length - 1].id + 1 : 1; // Generatore ID
     }
@@ -97,3 +109,6 @@ class DBMock {
 }
 
 module.exports = DBMock;
+
+
+//per ruouli admin può aggiungere o togliere le ricette

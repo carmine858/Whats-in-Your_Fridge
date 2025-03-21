@@ -191,7 +191,7 @@ color: #f4a53e;
 }
 
 .registration-row {
-  min-height: 100vh; 
+  min-height: 100%; 
  
 }
 
