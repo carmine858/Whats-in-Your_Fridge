@@ -4,13 +4,14 @@ import UserRegister from '../components/UserRegister.vue';
 import UserLogin from '../components/UserLogin.vue';
 import ProfileView from '@/views/ProfileView.vue';
 import RecipesView from '@/views/RecipesView.vue';
+import AdminView from '@/views/AdminView.vue';
 
 // Funzione per verificare l'autenticazione
 const isAuthenticated = async () => {
   const token = localStorage.getItem('token');
   
   if (!token) {
-    return { loggedIn: false, isAdmin: false, googleAuth: false };
+    return { loggedIn: false, role: null, googleAuth: false };
   }
 
   try {
@@ -24,12 +25,12 @@ const isAuthenticated = async () => {
     const data = await response.json();
     return { 
       loggedIn: true, 
-      isAdmin: data.isAdmin || false, 
+      role: data.role || 'user',
       googleAuth: data.googleAuth || false 
     };
   } catch (error) {
     console.error('Errore nella verifica autenticazione:', error);
-    return { loggedIn: false, isAdmin: false, googleAuth: false };
+    return { loggedIn: false, role: null, googleAuth: false };
   }
 };
 
@@ -54,6 +55,28 @@ const routes = [
     name: 'recipe',
     component: RecipesView,
     meta: { requiresAuth: true }
+  },
+  // Area Admin
+  {
+    path: '/admin',
+    component: AdminView,
+    meta: { requiresAuth: true, requiresAdmin: true },
+    children: [
+      {
+        path: '',
+        redirect: { name: 'admin-dashboard' }
+      },
+      {
+        path: 'dashboard',
+        name: 'admin-dashboard',
+        component: () => import('../components/admin/AdminDashboard.vue')
+      },
+      {
+        path: 'users',
+        name: 'admin-users',
+        component: () => import('../components/admin/UsersList.vue')
+      }
+    ]
   }
 ];
 
@@ -66,10 +89,15 @@ const router = createRouter({
 // Middleware per le rotte protette
 router.beforeEach(async (to, from, next) => {
   try {
-    const { loggedIn, googleAuth } = await isAuthenticated();
+    const { loggedIn, role, googleAuth } = await isAuthenticated();
+
+    // Verifica se la rotta richiede privilegi di admin
+    const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
 
     if (to.meta.requiresAuth && !loggedIn) {
       next('/'); // Redirige alla pagina di login se non autenticato
+    } else if (requiresAdmin && role !== 'admin') {
+      next('/home'); // Redirige alla home se non admin
     } else if (to.name === 'login' && (loggedIn || googleAuth)) {
       next('/home'); // Se già autenticato, va direttamente alla home
     } else {
