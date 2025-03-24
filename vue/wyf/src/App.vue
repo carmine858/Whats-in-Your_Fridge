@@ -11,17 +11,11 @@
           <v-icon>mdi-home</v-icon>
           Home
         </v-btn>
-        <v-btn @click="navigateTo('/recipe')">
-          <v-icon>mdi-food</v-icon>
-          Ricette
-        </v-btn>
-        <v-btn @click="navigateTo('#')">
-          <v-icon>mdi-magnify</v-icon>
-          Cerca
-        </v-btn>
-        <v-btn @click="navigateTo('#')">
-          <v-icon>mdi-cart</v-icon>
-          Lista
+        
+        
+        <v-btn @click="navigateTo('/chat')">
+          <v-icon>mdi-chat</v-icon>
+          Chef chat
         </v-btn>
         <v-btn @click="navigateTo('/profile')">
           <v-icon>mdi-account</v-icon>

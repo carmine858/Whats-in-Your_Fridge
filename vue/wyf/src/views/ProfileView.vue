@@ -162,8 +162,9 @@ export default {
   },
   methods: {
     logout() {
-      localStorage.removeItem('token');
-      this.$router.push('/login');
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      this.$router.push('/')
     },
     navigateTo(page) {
       console.log('Navigating to:', page);

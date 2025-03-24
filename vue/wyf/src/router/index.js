@@ -3,8 +3,8 @@ import HomeView from '../views/HomeView.vue';
 import UserRegister from '../components/UserRegister.vue';
 import UserLogin from '../components/UserLogin.vue';
 import ProfileView from '@/views/ProfileView.vue';
-import RecipesView from '@/views/RecipesView.vue';
 import AdminView from '@/views/AdminView.vue';
+import RecipeChat from '@/views/RecipeChat.vue';
 
 // Funzione per verificare l'autenticazione
 const isAuthenticated = async () => {
@@ -51,9 +51,9 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/recipe',
-    name: 'recipe',
-    component: RecipesView,
+    path: '/chat',
+    name: 'chat',
+    component: RecipeChat,
     meta: { requiresAuth: true }
   },
   // Area Admin

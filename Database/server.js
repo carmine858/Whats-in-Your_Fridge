@@ -7,6 +7,8 @@ const { OAuth2Client } = require('google-auth-library');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const axios = require('axios');
+const http = require('http');
+const socketIo = require('socket.io');
 
 const DBMock = require('./DBMock');  // Importiamo il DBMock per le ricette
 
@@ -16,6 +18,15 @@ const client = new OAuth2Client(CLIENT_ID);
 const app = express();
 const port = 3000;
 const JWT_SECRET = 'your_jwt_secret';
+
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
 
 // Configurazione Swagger
 const swaggerOptions = {
@@ -143,6 +154,99 @@ db.run(`CREATE TABLE IF NOT EXISTS registrazione (
 
 // Creazione tabella ricette nel mock
 const mockDb = new DBMock();
+
+// Funzione per trovare le ricette in base agli ingredienti dal DBMock
+function findRecipes(ingredients) {
+    const normalizedIngredients = ingredients.map(ing => ing.toLowerCase());
+    
+    // Esamina tutte le ricette nel DBMock
+    const matches = mockDb.getAllRecipes().map(recipe => {
+      // Combina ingredienti essenziali e aggiuntivi per la ricerca
+      const recipeIngredients = [
+        ...recipe.ingredienti_essenziali, 
+        ...(recipe.ingredienti_aggiuntivi || [])
+      ].map(ing => ing.toLowerCase());
+      
+      // Conta quanti ingredienti dalla ricerca corrispondono
+      const matchCount = recipeIngredients.filter(ing => 
+        normalizedIngredients.includes(ing)).length;
+      
+      // Calcola percentuale di corrispondenza basata sugli ingredienti essenziali
+      // (diamo più peso agli ingredienti essenziali)
+      const essentialMatchCount = recipe.ingredienti_essenziali
+        .map(ing => ing.toLowerCase())
+        .filter(ing => normalizedIngredients.includes(ing)).length;
+      
+      const matchPercentage = (essentialMatchCount * 1.5 + matchCount) / 
+        (recipe.ingredienti_essenziali.length * 1.5 + recipeIngredients.length);
+      
+      return {
+        recipe,
+        matchCount,
+        matchPercentage
+      };
+    });
+    
+    // Ordina per percentuale di corrispondenza (decrescente)
+    matches.sort((a, b) => b.matchPercentage - a.matchPercentage);
+    
+    return matches.filter(match => match.matchCount > 0).slice(0, 3);
+  }
+
+// Gestione delle connessioni WebSocket
+io.on('connection', (socket) => {
+    console.log('Nuovo client connesso alla chat delle ricette');
+  
+    // Quando l'utente richiede una ricetta basata sugli ingredienti
+    socket.on('request-recipe', async (data) => {
+      console.log('Richiesta ricetta con ingredienti:', data.ingredients);
+      
+      // Simuliamo un ritardo per dare l'impressione che lo chef stia pensando
+      socket.emit('typing');
+      
+      setTimeout(() => {
+        const matchingRecipes = findRecipes(data.ingredients);
+        
+        if (matchingRecipes.length === 0) {
+          socket.emit('recipe-suggestion', {
+            message: "Mi dispiace, non ho trovato ricette con questi ingredienti. Prova ad aggiungere altri ingredienti!"
+          });
+          return;
+        }
+        
+        // Formatta la risposta con le ricette consigliate
+        let response = "Ecco cosa potresti preparare con i tuoi ingredienti:<br><br>";
+        
+        matchingRecipes.forEach((match, index) => {
+          const recipe = match.recipe;
+          response += `<strong>${index + 1}. ${recipe.titolo}</strong> (${recipe.difficolta})<br>`;
+          response += `<u>Tipo</u>: ${recipe.tipo}<br>`;
+          response += `<u>Ingredienti essenziali</u>: ${recipe.ingredienti_essenziali.join(', ')}<br>`;
+          
+          if (recipe.ingredienti_aggiuntivi && recipe.ingredienti_aggiuntivi.length > 0) {
+            response += `<u>Ingredienti aggiuntivi</u>: ${recipe.ingredienti_aggiuntivi.join(', ')}<br>`;
+          }
+          
+          response += `<u>Istruzioni</u>: ${recipe.istruzioni}<br><br>`;
+        });
+        
+        socket.emit('recipe-suggestion', { message: response });
+      }, 1500);
+    });
+  
+    // Gestisci messaggi di chat generici
+    socket.on('chat-message', (data) => {
+      setTimeout(() => {
+        socket.emit('recipe-suggestion', {
+          message: "Per ricevere consigli sulle ricette, seleziona gli ingredienti e clicca su 'Chiedi una ricetta'."
+        });
+      }, 800);
+    });
+  
+    socket.on('disconnect', () => {
+      console.log('Client disconnesso dalla chat delle ricette');
+    });
+  });
 
 // Controlla se l'admin esiste già, altrimenti lo crea
 async function createAdminIfNotExists() {
@@ -1121,8 +1225,15 @@ app.get('/admin/dashboard', authenticateToken, isAdmin, (req, res) => {
     });
 });
 
-// Avvio del server
-app.listen(port, () => {
+server.listen(port, () => {
+    console.log(`Server in ascolto sulla porta ${port}`);
     console.log(`Server API in esecuzione su http://localhost:${port}`);
     console.log(`Documentazione Swagger disponibile su http://localhost:${port}/api-docs`);
 });
+
+
+// Avvio del server
+// app.listen(port, () => {
+    //console.log(`Server API in esecuzione su http://localhost:${port}`);
+    //console.log(`Documentazione Swagger disponibile su http://localhost:${port}/api-docs`);
+//});
