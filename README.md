@@ -10,6 +10,7 @@
 -Su Windows/Mac: Scaricare e installare Docker Desktop
 
 -Su Linux: Seguire le istruzioni specifiche per la propria distribuzione
+
 3. **Ottenere il progetto**
 
 -Con Git: git clone [https://github.com/carmine858/Whats-in-Your_Fridge.git]
