@@ -1,5 +1,23 @@
 # Whats-in-Your_Fridge
 
+**Guida Installazione**
+1. **Abilitare virtualizzazione nel BIOS**
+-Questo è necessario su Windows prima di installare Docker
+2. **Scaricare e installare Docker**
+-Su Windows/Mac: Scaricare e installare Docker Desktop
+-Su Linux: Seguire le istruzioni specifiche per la propria distribuzione
+3. **Ottenere il progetto**
+-Con Git: git clone [https://github.com/carmine858/Whats-in-Your_Fridge.git]
+-Senza Git: Scaricare lo ZIP del progetto e decomprimerlo
+4. **Entrare nella cartella creata**
+cd Whats-in-Your-Fridge
+5. **Avviare i container**
+docker-compose up -d
+6. **Accedere all'applicazione**
+Aprire il browser e visitare http://localhost
+
+
+
 ### Descrizione  
 **What's in Your Fridge** è un'app innovativa che aiuta gli appassionati di cucina a trovare ricette e idee originali per utilizzare al meglio i pochi ingredienti disponibili nel proprio frigo o dispensa. Permette agli utenti di condividere e consigliare le proprie creazioni culinarie con amici e familiari, favorendo una cucina creativa e sostenibile.  
 
