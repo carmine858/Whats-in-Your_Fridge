@@ -1,11 +1,32 @@
 # Whats-in-Your_Fridge
 
+**Elevator pitch**
+
+**INTRODUZIONE:**
+what's in your fridge è l’applicazione di cui non sapevi di aver bisogno per poter aggiungere creatività e sostenibilità nella routine di preparazione di pranzi cene e spuntini.
+
+**PROBLEMA:**
+Quante volte ci siamo trovati nella situazione di avere poco tempo e pochi alimenti in frigo per poter prepararsi un pranzo dignitoso ma senza avere la minima idea di cosa poter cucinare o ancora peggio di trovarsi nella situazione di dover buttare del cibo scaduto per essersi scordati di averlo in frigo e per non essere riusciti a trovare una ricetta che possa averlo come ingrediente.
+
+**SOLUZIONE:**
+La soluzione è proprio utilizzare WYF che ti permetterà di rinnovare senza sforzo in maniera creativa il tuo modo di cucinare con ciò che hai a disposizione in frigo e in termini di tempo, ma non solo, perché ti aiuterà ad evitare sprechi alimentari inutili suggerendoti le ricette con gli ingredienti in scadenza e a realizzare una lista della spesa intelligente.
+
+**BUSINESS PLAN:**
+la fonte di guadagno dell’applicazione si basa su un base di sviluppo freemium, con funzionalità gratis e a pagamento per un'esperienza qualitativa migliore 
+
+**MARKET SIZE:**
+Il mercato della gastronomia è a livello mondiale e sempre più in sviluppo specialmente per evitare sprechi alimentari, quest’app potrebbe contribuire esattamente ad evitare questo tipo di sprechi facendo risparmiare soldi alle famiglie e ai singoli permettendo comunque di realizzare pasti creativi e innovativi anche con quel poco che si ha.
+
+**TEAM:**
+Ovviamente da ideatore dell’app avrei la quota maggiore dell’azienda, ma per i primi investitori andrei a cedere circa un 10/15% della quota in base al capitale che l'investitore vorrebbe investire,andando pian piano a scalare per i futuri investitori.
+
+
 **Guida Installazione**
 1. **Abilitare virtualizzazione nel BIOS**
 
 -Questo è necessario su Windows prima di installare Docker
 
-2. **Scaricare e installare Docker**
+2. **Scaricare e installare Docker e Docker-compose**
 
 -Su Windows/Mac: Scaricare e installare Docker Desktop
 
@@ -13,13 +34,7 @@
 
 3. **Ottenere il progetto**
 
--Con Git: git clone [https://github.com/carmine858/Whats-in-Your_Fridge.git]
-
--Senza Git: Scaricare lo ZIP del progetto e decomprimerlo
-
-4. **Entrare nella cartella creata**
-
-cd Whats-in-Your-Fridge
+-scaricare il file docker-compose.yml
 
 5. **Avviare i container**
 
