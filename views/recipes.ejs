@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="/javascripts/recipes.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Recipes</h1>
+    </header>
+    <main>
+        <% recipes.forEach(function(recipe) { %>
+            <div class="recipe-card">
+                <h2><%= recipe.name %></h2>
+                <p><%= recipe.description %></p>
+                <div class="recipe-actions">
+                    <button class="cart-icon" onclick="addRecipeIngredientsToShoppingList('<%= recipe.id %>')">
+                        <i class="fas fa-cart-plus"></i>
+                    </button>
+                </div>
+            </div>
+        <% }); %>
+    </main>
+</body>
+</html>

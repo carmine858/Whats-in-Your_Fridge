@@ -1,0 +1,104 @@
+/* 
+ * WHAT'S IN YOUR FRIDGE - VARIABLES
+ * --------------------------------------
+ * CSS variables for the design system
+ */
+
+
+$primary: #4CAF50;
+$primary-light: #80E27E;
+$primary-dark: #087f23;
+$secondary: #FF9800;
+$secondary-light: #FFC947;
+$secondary-dark: #C66900;
+
+
+$accent: #03A9F4;
+$success: #00C853;
+$warning: #FFB300;
+$error: #F44336;
+$info: #2196F3;
+
+
+$text-primary: #263238;
+$text-secondary: #546E7A;
+$text-disabled: #90A4AE;
+$background: #FFFFFF;
+$surface: #FCFCFC;
+$divider: #ECEFF1;
+
+
+$font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+$font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+
+
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+
+$font-size-xs: 0.75rem;
+$font-size-sm: 0.875rem;
+$font-size-base: 1rem;
+$font-size-md: 1.125rem;
+$font-size-lg: 1.25rem;
+$font-size-xl: 1.5rem;
+$font-size-2xl: 1.875rem;
+$font-size-3xl: 2.25rem;
+$font-size-4xl: 3rem;
+
+
+$spacing-xxs: 0.25rem;
+$spacing-xs: 0.5rem;
+$spacing-sm: 0.75rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-2xl: 3rem;
+$spacing-3xl: 4rem;
+
+
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-round: 50px;
+$radius-circle: 50%;
+
+
+$shadow-light: 0 2px 4px rgba(0, 0, 0, 0.05);
+$shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.1);
+$shadow-large: 0 8px 16px rgba(0, 0, 0, 0.15);
+$shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
+$shadow-dropdown: 0 6px 20px rgba(0, 0, 0, 0.12);
+
+
+$transition-fast: 0.2s ease;
+$transition-normal: 0.3s ease;
+$transition-slow: 0.5s ease;
+
+
+$header-height: 64px;
+$footer-height: 250px;
+$navbar-height: 64px;
+$max-width: 1280px;
+$card-padding: 1.5rem;
+
+
+$z-background: -1;
+$z-default: 1;
+$z-sticky: 100;
+$z-dropdown: 500;
+$z-fixed: 700;
+$z-modal: 900;
+$z-tooltip: 950;
+$z-toast: 1000;
+
+
+$breakpoint-xs: 480px;
+$breakpoint-sm: 640px; 
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
