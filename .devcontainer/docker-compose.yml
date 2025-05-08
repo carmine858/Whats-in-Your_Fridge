@@ -1,0 +1,17 @@
+version: '3'
+services:
+  frontend:
+    # Configurazioni specifiche per l'ambiente di sviluppo
+    environment:
+      - NODE_ENV=development
+    command: npm run serve
+    # Configurazione per il hot-reload in development
+    stdin_open: true
+    tty: true
+
+  backend:
+    # Configurazioni specifiche per l'ambiente di sviluppo
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+      - DEBUG=app:*

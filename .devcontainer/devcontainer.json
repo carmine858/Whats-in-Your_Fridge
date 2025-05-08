@@ -1,0 +1,31 @@
+{
+  "name": "What's in Your Fridge",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "./docker-compose.yml"
+  ],
+  "service": "frontend",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [8080, 3000],
+  "postCreateCommand": "npm install && echo 'Workspace is ready!'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "dbaeumer.vscode-eslint",
+        "octref.vetur",
+        "ritwickdey.liveserver",
+        "ms-vscode-remote.remote-containers",
+        "github.codespaces"
+      ],
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+      }
+    }
+  },
+  "remoteUser": "node",
+  "features": {
+    "docker-in-docker": "latest",
+    "git": "latest"
+  }
+}
