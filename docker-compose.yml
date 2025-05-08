@@ -1,13 +1,26 @@
 version: '3'
 services:
   frontend:
-    image: carmi321/wyf:frontend
+    build:
+      context: ./vue/wyf
+      dockerfile: Dockerfile
+      target: development
     ports:
-      - "8080:80"
+      - "8080:8080"
+    volumes:
+      - ./vue/wyf:/workspace/vue/wyf
+      - /workspace/vue/wyf/node_modules
     depends_on:
       - backend
   
   backend:
-    image: carmi321/wyf:backend
+    build:
+      context: ./Database
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    volumes:
+      - ./Database:/workspace/Database
+      - /workspace/Database/node_modules
+    environment:
+      - NODE_ENV=development
